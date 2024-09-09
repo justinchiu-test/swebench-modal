@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Union, cast
 
-from swebench.harness.constants import (
+from swebench_modal.harness.constants import (
     SWEbenchInstance,
     KEY_INSTANCE_ID,
     FAIL_TO_PASS,
@@ -15,12 +15,12 @@ from swebench.harness.constants import (
     MAP_REPO_VERSION_TO_SPECS,
     USE_X86,
 )
-from swebench.harness.dockerfiles import (
+from swebench_modal.harness.dockerfiles import (
     get_dockerfile_base,
     get_dockerfile_env,
     get_dockerfile_instance,
 )
-from swebench.harness.utils import (
+from swebench_modal.harness.utils import (
     get_requirements,
     get_environment_yml,
     get_test_directives,

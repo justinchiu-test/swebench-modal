@@ -9,6 +9,7 @@ dependencies = [
     "datasets>=2.21.0",
     "requests",
     "python-dotenv",
+    "modal>=0.64.93",
 ]
 
 [build-system]
