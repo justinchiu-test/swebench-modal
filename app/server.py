@@ -12,7 +12,10 @@ from swebench_modal.harness.constants import (
 )
 
 
-def spawn_image(test_spec, vol):
+def read_stream(stream):
+    return "\n".join(line for line in stream)
+
+def run_tests(test_spec):
     # dynamically setup swebench image
     image_name = test_spec.instance_image_key
     env_image_name = test_spec.env_image_key
@@ -60,9 +63,9 @@ def spawn_image(test_spec, vol):
         "/opt/miniconda3/envs/testbed/bin/pytest -rA -vv -o console_output_style=classic --tb=no astropy/modeling/tests/test_separable.py::test_custom_model_separable",
         image=image,
     )
-    # TODO: programatic pytest running
-    return sandbox
-
+    stdout = read_stream(sandbox.stdout)
+    stderr = read_stream(sandbox.stderr)
+    return stdout, stderr
 
 
 async def main():
@@ -70,13 +73,10 @@ async def main():
     specs = get_test_specs_from_dataset(data["test"])
     test_spec = specs[0]
 
-    with modal.Volume.ephemeral() as vol:
-        sb = spawn_image(test_spec, vol)
-        await sb.wait.aio()
-        stdout = await sb.stdout.read.aio()
-        stderr = await sb.stderr.read.aio()
-        print("stdout:", stdout)
-        print("stderr:", stderr)
+    stdout, stderr = run_tests(test_spec, vol)
+    print("stdout:", stdout)
+    print("stderr:", stderr)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
