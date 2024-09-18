@@ -1,10 +1,12 @@
 import asyncio
 import modal
 
-image_path = f"setup/sweb.eval.x86_64.astropy__astropy-12907__latest"
+#image_path = f"setup/sweb.eval.x86_64.astropy__astropy-12907__latest"
+image_path = f"setup/sweb.eval.x86_64.django__django-11049__latest"
 
 env_path = f"{image_path}/env.sh"
 install_path = f"{image_path}/install.sh"
+diff_path = f"{image_path}/diff"
 
 image = (modal.Image
     .debian_slim(python_version="3.11")
@@ -17,11 +19,13 @@ image = (modal.Image
     .workdir("/root")
     .copy_local_file(env_path, "/root/env.sh")
     .copy_local_file(install_path, "/root/install.sh")
+    .copy_local_file(diff_path, "/root/diff")
     .workdir("/testbed")
     .run_commands(
         "ls /",
         "/bin/bash /root/env.sh",
         "/bin/bash /root/install.sh",
+        "git apply -v /root/diff",
     )
 )
 
