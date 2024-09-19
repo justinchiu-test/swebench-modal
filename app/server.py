@@ -35,7 +35,7 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 )
 
 
-@app.function(image=image)
+@app.function(image=image, secrets=[modal.Secret.from_name("my-github-secret"))
 @modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec):
 #def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
@@ -52,11 +52,12 @@ def run_tests(test_spec: TestSpec):
     diff_path = f"{image_path}/diff"
 
     Path(image_path).mkdir(exist_ok=True, parents=True)
+    ghtoken = os.environ["GITHUB_TOKEN"]
 
     with Path(env_path).open("w") as f:
         f.write(test_spec.setup_env_script)
     with Path(install_path).open("w") as f:
-        f.write(test_spec.install_repo_script)
+        f.write(test_spec.install_repo_script.format(token=ghtoken))
     with Path(eval_path).open("w") as f:
         f.write(test_spec.eval_script)
     with Path(diff_path).open("w") as f:
@@ -99,7 +100,8 @@ def main():
     import datasets
     from swebench_modal.harness.test_spec import make_test_spec
     data = datasets.load_dataset("princeton-nlp/SWE-bench_lite")
-    example = data["test"][0]
+    # django__django-13315
+    example = data["test"][52]
     test_spec = make_test_spec(example)
 
     """
