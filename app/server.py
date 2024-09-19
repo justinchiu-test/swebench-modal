@@ -125,7 +125,8 @@ def main():
         eval_script=test_spec.eval_script,
         diff="",
     )
-    output = requests.post("https://justinchiu--swebench-server-run-tests-dev.modal.run", json=data, timeout=600.0)
+    import os
+    output = requests.post(os.getenv("SWEBENCHSERVER"), json=data, timeout=600.0)
     import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
