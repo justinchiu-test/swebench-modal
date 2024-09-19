@@ -49,22 +49,23 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
         "adduser --disabled-password --gecos 'dog' nonroot",
     )
     .workdir("/root")
+    .workdir("/testbed")
+)
+
+app = modal.App("swebench-rpc")
+volume = modal.Volume.from_name("swebench-volume", create_if_missing=True)
+
+@app.function(image=image, volumes={"/vol": vol})
+def stuff():
     .copy_local_file(env_path, "/root/env.sh")
     .copy_local_file(install_path, "/root/install.sh")
     .copy_local_file(diff_path, "/root/diff")
-    .workdir("/testbed")
     .run_commands(
         "ls /",
         "/bin/bash /root/env.sh",
         "/bin/bash /root/install.sh",
         "git apply --allow-empty -v /root/diff",
     )
-)
-
-app = modal.App("swebench-rpc")
-
-@app.function(image=image)
-def stuff():
     import os
     print(os.getcwd())
     print(os.listdir("/root"))
