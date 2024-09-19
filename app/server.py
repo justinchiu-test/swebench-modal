@@ -35,7 +35,7 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 )
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("my-github-secret"))
+@app.function(image=image, secrets=[modal.Secret.from_name("my-github-secret")])
 @modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec):
 #def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
