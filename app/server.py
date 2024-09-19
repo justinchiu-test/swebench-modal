@@ -1,9 +1,12 @@
 import modal
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+import os
+import random
 
 
 class TestSpec(BaseModel):
+    repo: str
     instance_image_key: str
     env_image_key: str
     setup_env_script: str
@@ -13,6 +16,7 @@ class TestSpec(BaseModel):
 
 
 app = modal.App("swebench-server")
+volume = modal.Volume.from_name("swebench-repos", create_if_missing=True)
 image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     .run_commands("apt update")
     .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata")
@@ -35,7 +39,11 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 )
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("my-github-secret")])
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("my-github-secret")],
+    volumes={"/vol": volume}
+)
 @modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec):
 #def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
@@ -44,6 +52,9 @@ def run_tests(test_spec: TestSpec):
     import time
 
     start_time = time.time()
+
+    repo = test_spec.repo
+    flatrepo = repo.replace("/", "__")
 
     image_path = "/root"
     env_path = f"{image_path}/env.sh"
@@ -77,6 +88,7 @@ def run_tests(test_spec: TestSpec):
         shell=True
     ).decode("utf-8")
     print(install_output)
+    time.sleep(2)
     print("running apply")
     apply_output = subprocess.check_output(
         "git apply --allow-empty -v /root/diff",
@@ -95,31 +107,49 @@ def run_tests(test_spec: TestSpec):
     return output, end_time-start_time, env_output, install_output, apply_output
 
 
+def upload_repositories(volume, paths):
+    with volume.batch_upload() as batch:
+        for srcpath, tgtpath in paths:
+            batch.put_directory(srcpath, tgtpath)
+
+def clone_repos(repos):
+    import subprocess
+    action = "git clone https://{token}@github.com/{repo} repos/{flatrepo}"
+    paths = []
+    for repo in repos:
+        flatrepo = repo.replace("/", "__")
+        output = subprocess.check_output(
+            action.format(
+                token=os.environ["GITHUB_TOKEN"],
+                repo=repo,
+                flatrepo=flatrepo),
+            shell=True,
+        )
+        paths.append((f"repos/{flatrepo}", flatrepo))
+    return paths
+
 @app.local_entrypoint()
 def main():
     import datasets
     from swebench_modal.harness.test_spec import make_test_spec
+    import os
+    import subprocess
+
     data = datasets.load_dataset("princeton-nlp/SWE-bench_lite")
+
+    repos = set(data["test"]["repo"])
+    paths = clone_repos(repos)
+    upload_repositories(volume, paths)
+    import pdb; pdb.set_trace()
+
+
     # django__django-13315
-    example = data["test"][52]
+    #example = data["test"][52]
+    example = data["test"][33]
     test_spec = make_test_spec(example)
-
-    """
-    out, duration, env_out, install_out, apply_output = run_tests.remote(#TestSpec(
-        instance_image_key=test_spec.instance_image_key,
-        env_image_key=test_spec.env_image_key,
-        setup_env_script=test_spec.setup_env_script,
-        install_repo_script=test_spec.install_repo_script,
-        eval_script=test_spec.eval_script,
-        diff="",
-    )#)
-    print("out:", out)
-    print("duration:", duration)
-
-    """
-
     import requests
     data = dict(
+        repo=test_spec.repo,
         instance_image_key=test_spec.instance_image_key,
         env_image_key=test_spec.env_image_key,
         setup_env_script=test_spec.setup_env_script,
@@ -127,7 +157,6 @@ def main():
         eval_script=test_spec.eval_script,
         diff="",
     )
-    import os
     output = requests.post(os.getenv("SWEBENCHSERVER"), json=data, timeout=600.0)
     import pdb; pdb.set_trace()
 
