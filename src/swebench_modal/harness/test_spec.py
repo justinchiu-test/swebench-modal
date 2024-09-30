@@ -122,9 +122,10 @@ def make_repo_script_list(specs, repo, repo_directory, base_commit, env_name):
     """
     setup_commands = [
         #f"git clone -o origin https://{{token}}@github.com/{repo} {repo_directory}",
-        f"cp -r /vol/{repo.replace('/', '__')} /testbed",
+        f"cp -r /vol/{repo.replace('/', '__')}.tar.gz {repo_directory}/blob.tar.gz",
         f"chmod -R 777 {repo_directory}",  # So nonroot user can run tests
         f"cd {repo_directory}",
+        "tar -xzf blob.tar.gz",
         f"git reset --hard {base_commit}",
         # Remove the remote so the agent won't see newer commits.
         f"git remote remove origin",

@@ -1,11 +1,14 @@
 import modal
+from dataclasses import dataclass
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import os
 import random
 
 
-class TestSpec(BaseModel):
+@dataclass
+#class TestSpec(BaseModel):
+class TestSpec:
     repo: str
     instance_image_key: str
     env_image_key: str
@@ -41,10 +44,9 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 
 @app.function(
     image=image,
-    secrets=[modal.Secret.from_name("my-github-secret")],
     volumes={"/vol": volume}
 )
-@modal.web_endpoint(method="POST")
+#@modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec):
 #def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
     import subprocess
@@ -63,12 +65,13 @@ def run_tests(test_spec: TestSpec):
     diff_path = f"{image_path}/diff"
 
     Path(image_path).mkdir(exist_ok=True, parents=True)
-    ghtoken = os.environ["GITHUB_TOKEN"]
+    #ghtoken = os.environ["GITHUB_TOKEN"]
 
     with Path(env_path).open("w") as f:
         f.write(test_spec.setup_env_script)
     with Path(install_path).open("w") as f:
-        f.write(test_spec.install_repo_script.format(token=ghtoken))
+        #f.write(test_spec.install_repo_script.format(token=ghtoken))
+        f.write(test_spec.install_repo_script)
     with Path(eval_path).open("w") as f:
         f.write(test_spec.eval_script)
     with Path(diff_path).open("w") as f:
@@ -81,7 +84,20 @@ def run_tests(test_spec: TestSpec):
         shell=True,
     ).decode("utf-8")
     print(env_output)
+
     print("running install")
+    print(subprocess.check_output(
+        "cat /root/install.sh",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+    print(subprocess.check_output(
+        "ls /vol",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+
+
     install_output = subprocess.check_output(
         "/bin/bash /root/install.sh",
         stderr=subprocess.STDOUT,
@@ -112,6 +128,7 @@ def upload_repositories(volume, paths):
         for srcpath, tgtpath in paths:
             batch.put_directory(srcpath, tgtpath)
 
+
 def clone_repos(repos):
     import subprocess
     action = "git clone https://{token}@github.com/{repo} repos/{flatrepo}"
@@ -128,6 +145,7 @@ def clone_repos(repos):
         paths.append((f"repos/{flatrepo}", flatrepo))
     return paths
 
+
 @app.local_entrypoint()
 def main():
     import datasets
@@ -136,17 +154,18 @@ def main():
     import subprocess
 
     data = datasets.load_dataset("princeton-nlp/SWE-bench_lite")
-
+    """
     repos = set(data["test"]["repo"])
     paths = clone_repos(repos)
     upload_repositories(volume, paths)
     import pdb; pdb.set_trace()
-
+    """
 
     # django__django-13315
     #example = data["test"][52]
     example = data["test"][33]
     test_spec = make_test_spec(example)
+
     import requests
     data = dict(
         repo=test_spec.repo,
@@ -157,8 +176,9 @@ def main():
         eval_script=test_spec.eval_script,
         diff="",
     )
-    output = requests.post(os.getenv("SWEBENCHSERVER"), json=data, timeout=600.0)
-    import pdb; pdb.set_trace()
+    output = run_tests.remote(TestSpec(**data))
+    #output = requests.post(os.getenv("SWEBENCHSERVER"), json=data, timeout=600.0)
+    #import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
     main()
