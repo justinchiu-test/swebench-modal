@@ -980,9 +980,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "argparse", specifier = ">=1.4.0" },
-    { name = "datasets", specifier = ">=2.21.0" },
-    { name = "modal", specifier = ">=0.64.93" },
+    { name = "argparse" },
+    { name = "datasets" },
+    { name = "modal" },
     { name = "python-dotenv" },
     { name = "requests" },
 ]

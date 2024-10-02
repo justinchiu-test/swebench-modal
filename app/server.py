@@ -22,7 +22,7 @@ app = modal.App("swebench-server")
 volume = modal.Volume.from_name("swebench-repos", create_if_missing=True)
 image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     .run_commands("apt update")
-    .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata")
+    .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata", "tar")
     .run_commands(
         "rm -rf /var/lib/apt/lists/*",
         "apt-get update && apt-get install software-properties-common -y",
@@ -54,6 +54,7 @@ def run_tests(test_spec: TestSpec):
     import time
 
     start_time = time.time()
+    volume.reload()
 
     repo = test_spec.repo
     flatrepo = repo.replace("/", "__")
@@ -86,17 +87,38 @@ def run_tests(test_spec: TestSpec):
     print(env_output)
 
     print("running install")
+    """
     print(subprocess.check_output(
         "cat /root/install.sh",
         stderr=subprocess.STDOUT,
         shell=True,
     ).decode("utf-8"))
+
     print(subprocess.check_output(
-        "ls /vol",
+        "ls /vol/django__django.tar.gz",
         stderr=subprocess.STDOUT,
         shell=True,
     ).decode("utf-8"))
 
+
+    print(subprocess.check_output(
+        "cp /vol/django__django.tar.gz /tmp/django__django.tar.gz",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+
+    print(subprocess.check_output(
+        "tar -xzf /tmp/django__django.tar.gz --no-same-owner",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+
+    print(subprocess.check_output(
+        "ls /tmp",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+    """
 
     install_output = subprocess.check_output(
         "/bin/bash /root/install.sh",

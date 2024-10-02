@@ -5,11 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "argparse>=1.4.0",
-    "datasets>=2.21.0",
+    "argparse",
+    "datasets",
     "requests",
     "python-dotenv",
-    "modal>=0.64.93",
+    "modal",
 ]
 
 [build-system]
