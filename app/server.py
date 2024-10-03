@@ -34,7 +34,7 @@ class ExecOutput:
 
 
 def subrun(command):
-    return subprocess.run(command, shell=True, text=True)
+    return subprocess.run(command, shell=True, text=True, capture_output=True)
 
 
 app = modal.App("swebench-server")
@@ -113,8 +113,8 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
 
     print("running eval")
     eval_output = subrun("/bin/bash /root/eval.sh")
-    print(eval_output.stdout)
-    print(apply_output.stderr)
+    #print(eval_output.stdout)
+    #print(eval_output.stderr)
     end_time = time.time()
 
     return ExecOutput(
@@ -163,12 +163,17 @@ async def main():
         )
         futures.append(run_tests.remote.aio(TestSpec(**data)))
     outputs = await asyncio.gather(*futures)
+
     pass_rates = []
-    for example, output in zip(data, outputs):
-        log_parser = MAP_REPO_TO_PARSER[example["repo"]]
+    logs = []
+    for repo, output in zip(data["repo"], outputs):
+        log_parser = MAP_REPO_TO_PARSER[repo]
         log = log_parser(output.eval_output)
         pass_rate = np.mean([result == "PASSED" for result in log.values()])
+
+        logs.append(log)
         pass_rates.append(pass_rate)
+
         print(log)
         print(pass_rate)
     import pdb; pdb.set_trace()
