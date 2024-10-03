@@ -125,7 +125,7 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
         env_err=env_output.stderr,
         install_output=install_output.stdout,
         install_err=install_output.stderr,
-        apply_output=apply_output.stdour,
+        apply_output=apply_output.stdout,
         apply_err=apply_output.stderr,
     )
 
@@ -163,14 +163,15 @@ async def main():
         )
         futures.append(run_tests.remote.aio(TestSpec(**data)))
     outputs = await asyncio.gather(*futures)
-    import pdb; pdb.set_trace()
     pass_rates = []
     for example, output in zip(data["test"], outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
         pass_rate = np.mean([result == "PASSED" for result in log.values()])
-        pass_rates.append()
-    print(log)
+        pass_rates.append(pass_rate)
+        print(log)
+        print(pass_rate)
+    import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":
