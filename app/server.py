@@ -152,7 +152,7 @@ async def main():
     futures = []
     for example in data:
         test_spec = make_test_spec(example)
-        data = dict(
+        args = dict(
             repo=test_spec.repo,
             instance_image_key=test_spec.instance_image_key,
             env_image_key=test_spec.env_image_key,
@@ -161,13 +161,13 @@ async def main():
             eval_script=test_spec.eval_script,
             diff=example["patch"],
         )
-        futures.append(run_tests.remote.aio(TestSpec(**data)))
+        futures.append(run_tests.remote.aio(TestSpec(**args)))
     outputs = await asyncio.gather(*futures)
 
     pass_rates = []
     logs = []
-    for repo, output in zip(data["repo"], outputs):
-        log_parser = MAP_REPO_TO_PARSER[repo]
+    for example, output in zip(data, outputs):
+        log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
         pass_rate = np.mean([result == "PASSED" for result in log.values()])
 
