@@ -64,7 +64,7 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     image=image,
     volumes={"/vol": volume},
     concurrency_limit=50,
-    timeout=600,
+    timeout=900,
 )
 #@modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec) -> ExecOutput:
@@ -140,7 +140,7 @@ async def main():
     from swebench_modal.harness.log_parsers import MAP_REPO_TO_PARSER
 
 
-    data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test[0:1]")
+    data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test")
     """
     repos = set(data["test"]["repo"])
     paths = clone_repos(repos)
