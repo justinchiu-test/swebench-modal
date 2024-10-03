@@ -164,7 +164,7 @@ async def main():
         futures.append(run_tests.remote.aio(TestSpec(**data)))
     outputs = await asyncio.gather(*futures)
     pass_rates = []
-    for example, output in zip(data["test"], outputs):
+    for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
         pass_rate = np.mean([result == "PASSED" for result in log.values()])
