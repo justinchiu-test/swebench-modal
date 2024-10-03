@@ -38,7 +38,6 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
         "adduser --disabled-password --gecos 'dog' nonroot",
     )
     .workdir("/root")
-    .workdir("/testbed")
 )
 
 
@@ -77,6 +76,8 @@ def run_tests(test_spec: TestSpec):
         f.write(test_spec.eval_script)
     with Path(diff_path).open("w") as f:
         f.write(test_spec.diff)
+
+    print(test_spec.diff)
 
     print("env")
     print(subprocess.check_output(
@@ -133,7 +134,22 @@ def run_tests(test_spec: TestSpec):
         shell=True
     ).decode("utf-8")
     print(install_output)
-    time.sleep(2)
+
+
+    print(subprocess.check_output(
+        "ls /root",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+
+    print(subprocess.check_output(
+        "ls -alh /testbed",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
+
+
+ 
     print("running apply")
     apply_output = subprocess.check_output(
         "git apply --allow-empty -v /root/diff",
@@ -203,7 +219,7 @@ def main():
         setup_env_script=test_spec.setup_env_script,
         install_repo_script=test_spec.install_repo_script,
         eval_script=test_spec.eval_script,
-        diff="",
+        diff=example["patch"],
     )
     output = run_tests.remote(TestSpec(**data))
     #output = requests.post(os.getenv("SWEBENCHSERVER"), json=data, timeout=600.0)

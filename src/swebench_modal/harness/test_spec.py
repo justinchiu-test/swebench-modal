@@ -43,6 +43,7 @@ class TestSpec:
     arch: str
     FAIL_TO_PASS: list[str]
     PASS_TO_PASS: list[str]
+    diff: str | None = None
 
     @property
     def setup_env_script(self):
