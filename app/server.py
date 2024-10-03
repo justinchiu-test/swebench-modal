@@ -78,22 +78,29 @@ def run_tests(test_spec: TestSpec):
     with Path(diff_path).open("w") as f:
         f.write(test_spec.diff)
 
+    print("env")
+    print(subprocess.check_output(
+        "cat /root/env.sh",
+        stderr=subprocess.STDOUT,
+        shell=True,
+    ).decode("utf-8"))
     print("running env")
     env_output = subprocess.check_output(
         "/bin/bash /root/env.sh",
         stderr=subprocess.STDOUT,
         shell=True,
     ).decode("utf-8")
-    print(env_output)
+    #print(env_output)
 
-    print("running install")
-    """
+    print("install")
     print(subprocess.check_output(
         "cat /root/install.sh",
         stderr=subprocess.STDOUT,
         shell=True,
     ).decode("utf-8"))
+    print("running install")
 
+    """
     print(subprocess.check_output(
         "ls /vol/django__django.tar.gz",
         stderr=subprocess.STDOUT,

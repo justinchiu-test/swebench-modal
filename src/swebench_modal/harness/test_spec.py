@@ -124,7 +124,8 @@ def make_repo_script_list(specs, repo, repo_directory, base_commit, env_name):
     setup_commands = [
         #f"git clone -o origin https://{{token}}@github.com/{repo} {repo_directory}",
         f"cp /vol/{reponame}.tar.gz /tmp/",
-        f"tar -xzf /tmp/{reponame}.tar.gz -C --no-same-owner",
+        f"tar -xzf /tmp/{reponame}.tar.gz -C /tmp --no-same-owner",
+        f"rm -rf {repo_directory}",
         f"mv /tmp/{reponame} {repo_directory}",
         f"chmod -R 777 {repo_directory}",  # So nonroot user can run tests
         f"cd {repo_directory}",
