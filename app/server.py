@@ -163,16 +163,18 @@ async def main():
 
     pass_rates = []
     logs = []
+    all_passed = []
     for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
         pass_rate = np.mean([result == "PASSED" for result in log.values()])
+        all_pass = all([result == "PASSED" for result in log.values()])
 
         logs.append(log)
         pass_rates.append(pass_rate)
+        all_passed.append(all_pass)
 
-        print(log)
-        print(pass_rate)
+    print("passed:", sum(all_passed), len(all_passed))
     import pdb; pdb.set_trace()
 
 
