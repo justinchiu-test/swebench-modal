@@ -64,7 +64,8 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     image=image,
     volumes={"/vol": volume},
     concurrency_limit=50,
-    timeout=900,
+    timeout=1800,
+    retries=4,
 )
 #@modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec) -> ExecOutput:
