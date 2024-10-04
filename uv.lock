@@ -976,6 +976,7 @@ dependencies = [
     { name = "modal" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "tqdm" },
 ]
 
 [package.metadata]
@@ -985,6 +986,7 @@ requires-dist = [
     { name = "modal" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "tqdm", specifier = ">=4.66.5" },
 ]
 
 [[package]]

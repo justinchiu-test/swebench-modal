@@ -12,6 +12,7 @@ import subprocess
 @dataclass
 class TestSpec:
     repo: str
+    base_commit: str
     instance_image_key: str
     env_image_key: str
     setup_env_script: str
@@ -79,6 +80,7 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
 
     repo = test_spec.repo
     flatrepo = repo.replace("/", "__")
+    base_commit = test_spec.base_commit
 
     image_path = "/root"
     env_path = f"{image_path}/env.sh"
@@ -97,25 +99,17 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
     with Path(diff_path).open("w") as f:
         f.write(test_spec.diff)
 
-    print("running env")
+    print(f"running env for {repo}-{base_commit}")
     env_output = subrun("/bin/bash /root/env.sh")
-    print(env_output.stdout)
-    print(env_output.stderr)
 
-    print("running install")
+    print(f"running install for {repo}-{base_commit}")
     install_output = subrun("/bin/bash /root/install.sh")
-    print(install_output.stdout)
-    print(install_output.stderr)
 
-    print("running apply")
+    print(f"running apply for {repo}-{base_commit}")
     apply_output = subrun("cd /testbed && git apply --allow-empty -v /root/diff")
-    print(apply_output.stdout)
-    print(apply_output.stderr)
 
-    print("running eval")
+    print(f"running eval for {repo}-{base_commit}")
     eval_output = subrun("/bin/bash /root/eval.sh")
-    #print(eval_output.stdout)
-    #print(eval_output.stderr)
     end_time = time.time()
 
     return ExecOutput(
@@ -136,6 +130,7 @@ async def main():
     import datasets
     import os
     import subprocess
+    from tqdm.asyncio import tqdm_asyncio
 
     from swebench_modal.harness.test_spec import make_test_spec
     from swebench_modal.harness.log_parsers import MAP_REPO_TO_PARSER
@@ -155,15 +150,16 @@ async def main():
         test_spec = make_test_spec(example)
         args = dict(
             repo=test_spec.repo,
+            base_commit=example["base_commit"],
             instance_image_key=test_spec.instance_image_key,
             env_image_key=test_spec.env_image_key,
             setup_env_script=test_spec.setup_env_script,
             install_repo_script=test_spec.install_repo_script,
             eval_script=test_spec.eval_script,
-            diff=example["patch"],
+            diff=example["patch"], # GOLD PATCH
         )
         futures.append(run_tests.remote.aio(TestSpec(**args)))
-    outputs = await asyncio.gather(*futures)
+    outputs = await tqdm_asyncio.gather(*futures, total=len(data))
 
     pass_rates = []
     logs = []
