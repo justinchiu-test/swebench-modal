@@ -64,9 +64,10 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 @app.function(
     image=image,
     volumes={"/vol": volume},
-    concurrency_limit=50,
+    concurrency_limit=80,
     timeout=1800,
     retries=4,
+    cpu=1.0,
 )
 #@modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec) -> ExecOutput:
@@ -164,6 +165,7 @@ async def main():
     pass_rates = []
     logs = []
     all_passed = []
+    failed = []
     for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
@@ -173,6 +175,8 @@ async def main():
         logs.append(log)
         pass_rates.append(pass_rate)
         all_passed.append(all_pass)
+        if not all_pass:
+            failed.append((example, output, log))
 
     print("passed:", sum(all_passed), len(all_passed))
     import pdb; pdb.set_trace()
