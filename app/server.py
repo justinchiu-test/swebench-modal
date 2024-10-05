@@ -169,8 +169,11 @@ async def main():
     for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
-        pass_rate = np.mean([result == "PASSED" for result in log.values()])
-        all_pass = all([result == "PASSED" for result in log.values()])
+        fail_rate = np.mean([result == "FAILED" for result in log.values()])
+        any_fail = any([result == "FAILED" for result in log.values()])
+
+        pass_rate = 1 - fail_rate
+        all_pass = not any_fail
 
         logs.append(log)
         pass_rates.append(pass_rate)
@@ -179,7 +182,6 @@ async def main():
             failed.append((example, output, log))
 
     print("passed:", sum(all_passed), len(all_passed))
-    import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":
