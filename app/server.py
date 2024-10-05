@@ -169,6 +169,7 @@ async def main():
     for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
+
         fail_rate = np.mean([result == "FAILED" for result in log.values()])
         any_fail = any([result == "FAILED" for result in log.values()])
 
@@ -178,8 +179,16 @@ async def main():
         logs.append(log)
         pass_rates.append(pass_rate)
         all_passed.append(all_pass)
+
         if not all_pass:
             failed.append((example, output, log))
+
+
+        repo = example["repo"]
+        flatrepo = repo.replace("/", "__")
+        basecommit = example["base_commit"]
+        with open(f"reports/{flatrepo}-{basecommit}", "w") as f:
+            f.write(json.dumps((example, output, log)))
 
     print("passed:", sum(all_passed), len(all_passed))
 
