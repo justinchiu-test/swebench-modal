@@ -139,6 +139,7 @@ async def main():
 
 
     data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test")
+    import pdb; pdb.set_trace()
     """
     repos = set(data["test"]["repo"])
     paths = clone_repos(repos)
@@ -184,11 +185,8 @@ async def main():
         if not all_pass:
             failed.append((example, output, log))
 
-
-        repo = example["repo"]
-        flatrepo = repo.replace("/", "__")
-        basecommit = example["base_commit"]
-        with open(f"reports/{flatrepo}-{basecommit}", "w") as f:
+        instance_id = example["instance_id"]
+        with open(f"reports/{instance_id}", "w") as f:
             f.write(json.dumps((example, output.eval_output, log)))
 
     print("passed:", sum(all_passed), len(all_passed))
