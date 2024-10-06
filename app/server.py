@@ -131,6 +131,7 @@ async def main():
     import datasets
     import os
     import subprocess
+    import json
     from tqdm.asyncio import tqdm_asyncio
 
     from swebench_modal.harness.test_spec import make_test_spec
@@ -188,7 +189,7 @@ async def main():
         flatrepo = repo.replace("/", "__")
         basecommit = example["base_commit"]
         with open(f"reports/{flatrepo}-{basecommit}", "w") as f:
-            f.write(json.dumps((example, output, log)))
+            f.write(json.dumps((example, output.eval_output, log)))
 
     print("passed:", sum(all_passed), len(all_passed))
 
