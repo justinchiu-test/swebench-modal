@@ -40,6 +40,7 @@ def subrun(command):
 
 app = modal.App("swebench-server")
 volume = modal.Volume.from_name("swebench-repos", create_if_missing=True)
+# i think the default is amd64, eg normal x86?
 image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
     .run_commands("apt update")
     .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata", "tar")
@@ -64,13 +65,97 @@ image = (modal.Image.from_registry("ubuntu:22.04", add_python="3.11")
 @app.function(
     image=image,
     volumes={"/vol": volume},
-    concurrency_limit=80,
-    timeout=1800,
+    concurrency_limit=100,
+    timeout=3600,
     retries=4,
     cpu=1.0,
 )
 #@modal.web_endpoint(method="POST")
 def run_tests(test_spec: TestSpec) -> ExecOutput:
+#def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
+    import subprocess
+    from pathlib import Path
+    import time
+
+    start_time = time.time()
+    volume.reload()
+
+    repo = test_spec.repo
+    flatrepo = repo.replace("/", "__")
+    base_commit = test_spec.base_commit
+
+    image_path = "/root"
+    env_path = f"{image_path}/env.sh"
+    install_path = f"{image_path}/install.sh"
+    eval_path = f"{image_path}/eval.sh"
+    diff_path = f"{image_path}/diff"
+
+    Path(image_path).mkdir(exist_ok=True, parents=True)
+
+    with Path(env_path).open("w") as f:
+        f.write(test_spec.setup_env_script)
+    with Path(install_path).open("w") as f:
+        f.write(test_spec.install_repo_script)
+    with Path(eval_path).open("w") as f:
+        f.write(test_spec.eval_script)
+    with Path(diff_path).open("w") as f:
+        f.write(test_spec.diff)
+
+    print(f"running env for {repo}-{base_commit}")
+    env_output = subrun("/bin/bash /root/env.sh")
+
+    print(f"running install for {repo}-{base_commit}")
+    install_output = subrun("/bin/bash /root/install.sh")
+
+    print(f"running apply for {repo}-{base_commit}")
+    apply_output = subrun("cd /testbed && git apply --allow-empty -v /root/diff")
+
+    print(f"running eval for {repo}-{base_commit}")
+    eval_output = subrun("/bin/bash /root/eval.sh")
+    end_time = time.time()
+
+    return ExecOutput(
+        eval_output=eval_output.stdout,
+        eval_err=eval_output.stderr,
+        duration=end_time-start_time,
+        env_output=env_output.stdout,
+        env_err=env_output.stderr,
+        install_output=install_output.stdout,
+        install_err=install_output.stderr,
+        apply_output=apply_output.stdout,
+        apply_err=apply_output.stderr,
+    )
+
+image_arm = (modal.Image.from_registry("arm64v8/ubuntu:22.04", add_python="3.11")
+    .run_commands("apt update")
+    .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata", "tar")
+    .run_commands(
+        "rm -rf /var/lib/apt/lists/*",
+        "apt-get update && apt-get install software-properties-common -y",
+        "add-apt-repository ppa:git-core/ppa -y",
+        "apt-get update && apt-get install git -y",
+    )
+    .run_commands(
+        "wget 'https://repo.anaconda.com/miniconda/Miniconda3-py311_23.11.0-2-Linux-aarch64.sh' -O miniconda.sh",
+        "bash miniconda.sh -b -p /opt/miniconda3",
+        "/opt/miniconda3/bin/conda init --all",
+        "/opt/miniconda3/bin/conda config --append channels conda-forge",
+        "adduser --disabled-password --gecos 'dog' nonroot",
+    )
+    .workdir("/root")
+)
+
+
+@app.function(
+    image=image_arm,
+    volumes={"/vol": volume},
+    concurrency_limit=100,
+    timeout=3600,
+    retries=4,
+    cpu=1.0,
+)
+#@modal.web_endpoint(method="POST")
+def run_tests_arm(test_spec: TestSpec) -> ExecOutput:
 #def run_tests(instance_image_key, env_image_key, setup_env_script, install_repo_script, eval_script, diff):
     import subprocess
     from pathlib import Path
@@ -139,7 +224,6 @@ async def main():
 
 
     data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test")
-    import pdb; pdb.set_trace()
     """
     repos = set(data["test"]["repo"])
     paths = clone_repos(repos)
@@ -161,7 +245,10 @@ async def main():
             eval_script=test_spec.eval_script,
             diff=example["patch"], # GOLD PATCH
         )
-        futures.append(run_tests.remote.aio(TestSpec(**args)))
+        if "x86" in test_spec.base_image_key:
+            futures.append(run_tests.remote.aio(TestSpec(**args)))
+        else:
+            futures.append(run_tests_arm.remote.aio(TestSpec(**args)))
     outputs = await tqdm_asyncio.gather(*futures, total=len(data))
 
     pass_rates = []
