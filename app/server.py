@@ -1,4 +1,5 @@
 import asyncio
+import json
 import modal
 from dataclasses import dataclass
 from fastapi.responses import HTMLResponse
@@ -13,6 +14,7 @@ import subprocess
 class TestSpec:
     repo: str
     base_commit: str
+    instance_id: str
     instance_image_key: str
     env_image_key: str
     setup_env_script: str
@@ -23,6 +25,7 @@ class TestSpec:
 
 @dataclass
 class ExecOutput:
+    eval_json_str: str
     eval_output: str
     eval_err: str
     duration: float
@@ -112,9 +115,20 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
 
     print(f"running eval for {repo}-{base_commit}")
     eval_output = subrun("/bin/bash /root/eval.sh")
+
+    #print("ls /testbed")
+    #print(subrun("ls /testbed").stdout)
+
+    #subrun(f"mkdir -p /vol/reports/{test_spec.instance_id} && cp /testbed/report.json /vol/reports/{test_spec.instance_id}/report.json")
+    #volume.commit()
+
+    #print(f"ls /vol/reports/{test_spec.instance_id}")
+    eval_json_str = subrun("cat /testbed/report.json").stdout
+
     end_time = time.time()
 
     return ExecOutput(
+        eval_json_str=eval_json_str,
         eval_output=eval_output.stdout,
         eval_err=eval_output.stderr,
         duration=end_time-start_time,
@@ -126,6 +140,7 @@ def run_tests(test_spec: TestSpec) -> ExecOutput:
         apply_err=apply_output.stderr,
     )
 
+"""
 image_arm = (modal.Image.from_registry("arm64v8/ubuntu:22.04", add_python="3.11")
     .run_commands("apt update")
     .apt_install("wget", "build-essential", "libffi-dev", "libtiff-dev", "python3", "python3-pip", "python-is-python3", "jq", "curl", "locales", "locales-all", "tzdata", "tar")
@@ -209,7 +224,7 @@ def run_tests_arm(test_spec: TestSpec) -> ExecOutput:
         apply_output=apply_output.stdout,
         apply_err=apply_output.stderr,
     )
-
+"""
 
 @app.local_entrypoint()
 async def main():
@@ -238,6 +253,7 @@ async def main():
         args = dict(
             repo=test_spec.repo,
             base_commit=example["base_commit"],
+            instance_id=example["instance_id"],
             instance_image_key=test_spec.instance_image_key,
             env_image_key=test_spec.env_image_key,
             setup_env_script=test_spec.setup_env_script,
@@ -245,10 +261,13 @@ async def main():
             eval_script=test_spec.eval_script,
             diff=example["patch"], # GOLD PATCH
         )
+        futures.append(run_tests.remote.aio(TestSpec(**args)))
+        """
         if "x86" in test_spec.base_image_key:
             futures.append(run_tests.remote.aio(TestSpec(**args)))
         else:
             futures.append(run_tests_arm.remote.aio(TestSpec(**args)))
+        """
     outputs = await tqdm_asyncio.gather(*futures, total=len(data))
 
     pass_rates = []
@@ -258,6 +277,9 @@ async def main():
     for example, output in zip(data, outputs):
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
+
+        eval_json = json.loads(output.eval_json_str)
+        import pdb; pdb.set_trace()
 
         fail_rate = np.mean([result == "FAILED" for result in log.values()])
         any_fail = any([result == "FAILED" for result in log.values()])

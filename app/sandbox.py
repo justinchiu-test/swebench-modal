@@ -88,9 +88,10 @@ def main():
     test_spec = make_test_spec(example)
     #import pdb; pdb.set_trace()
 
-    stdout, stderr = run_tests(test_spec)
-    print("stdout:", stdout)
-    print("stderr:", stderr)
+    with app.run():
+        stdout, stderr = run_tests(test_spec)
+        print("stdout:", stdout)
+        print("stderr:", stderr)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from pathlib import Path
 import numpy as np
 
@@ -41,17 +42,26 @@ def check_resolved(path):
     with gold_path.open("r") as f:
         gold_report = json.loads(f.read())
     """
+    if not resolved:
+        import pdb; pdb.set_trace()
     return example["repo"], resolved, all_passed
 
 
 repos = []
 is_resolved = []
 all_passed = []
+repo_failures = Counter()
+repo_noresolve = Counter()
 for path in Path("reports").rglob("*"):
     repo, resolved,all_pass  = check_resolved(path)
     repos.append(repo)
     is_resolved.append(resolved)
     all_passed.append(all_pass)
+    if not all_pass:
+        repo_failures[repo] += 1
+    if not resolved:
+        repo_noresolve[repo] += 1
 
 print(sum(is_resolved), len(is_resolved))
-import pdb; pdb.set_trace()
+print(repo_failures)
+print(repo_noresolve)

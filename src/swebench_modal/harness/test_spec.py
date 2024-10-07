@@ -229,6 +229,8 @@ def make_eval_script_list(instance, specs, env_name, repo_directory, base_commit
     test_command = " ".join(
         [
             MAP_REPO_VERSION_TO_SPECS[instance["repo"]][instance["version"]]["test_cmd"],
+            "--json-report",
+            "--json-report-file=/testbed/report.json",
             *get_test_directives(instance),
         ]
     )
@@ -248,6 +250,8 @@ def make_eval_script_list(instance, specs, env_name, repo_directory, base_commit
         f"git diff {base_commit}",
         "source /opt/miniconda3/bin/activate",
         f"conda activate {env_name}",
+        # SUPER IMPORTANT FOR TEST FORMATTING
+        "pip install pytest-json-report",
     ]
     if "install" in specs:
         eval_commands.append(specs["install"])
@@ -255,7 +259,7 @@ def make_eval_script_list(instance, specs, env_name, repo_directory, base_commit
         reset_tests_command,
         apply_test_patch_command,
         test_command,
-        reset_tests_command,  # Revert tests after done, leave the repo in the same state as before
+        #reset_tests_command,  # Revert tests after done, leave the repo in the same state as before
     ]
     return eval_commands
 
