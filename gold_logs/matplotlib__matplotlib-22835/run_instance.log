@@ -1,0 +1,97 @@
+2024-10-04 05:06:51,757 - INFO - Environment image sweb.env.x86_64.7037e8c448a4b8ebfe9b13:latest found for matplotlib__matplotlib-22835
+Building instance image sweb.eval.x86_64.matplotlib__matplotlib-22835:latest for matplotlib__matplotlib-22835
+2024-10-04 05:12:55,728 - INFO - Creating container for matplotlib__matplotlib-22835...
+2024-10-04 05:12:55,776 - INFO - Container for matplotlib__matplotlib-22835 created: 6758cc55d9d1909d5932c0b6075efd9d8969d826c48ba2c44d0881ba50072a63
+2024-10-04 05:12:56,332 - INFO - Container for matplotlib__matplotlib-22835 started: 6758cc55d9d1909d5932c0b6075efd9d8969d826c48ba2c44d0881ba50072a63
+2024-10-04 05:12:56,333 - INFO - Intermediate patch for matplotlib__matplotlib-22835 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-22835/patch.diff, now applying to container...
+2024-10-04 05:12:56,612 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:12:56,668 - INFO - >>>>> Applied Patch:
+patching file lib/matplotlib/artist.py
+
+2024-10-04 05:12:58,670 - INFO - Git diff before:
+diff --git a/lib/matplotlib/artist.py b/lib/matplotlib/artist.py
+index 1f33b9d3ec..24a60fd4d1 100644
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -12,6 +12,7 @@ import numpy as np
+ 
+ import matplotlib as mpl
+ from . import _api, cbook
++from .colors import BoundaryNorm
+ from .cm import ScalarMappable
+ from .path import Path
+ from .transforms import (Bbox, IdentityTransform, Transform, TransformedBbox,
+@@ -1303,10 +1304,20 @@ class Artist:
+                 return "[]"
+             normed = self.norm(data)
+             if np.isfinite(normed):
+-                # Midpoints of neighboring color intervals.
+-                neighbors = self.norm.inverse(
+-                    (int(self.norm(data) * n) + np.array([0, 1])) / n)
+-                delta = abs(neighbors - data).max()
++                if isinstance(self.norm, BoundaryNorm):
++                    # not an invertible normalization mapping
++                    cur_idx = np.argmin(np.abs(self.norm.boundaries - data))
++                    neigh_idx = max(0, cur_idx - 1)
++                    # use max diff to prevent delta == 0
++                    delta = np.diff(
++                        self.norm.boundaries[neigh_idx:cur_idx + 2]
++                    ).max()
++
++                else:
++                    # Midpoints of neighboring color intervals.
++                    neighbors = self.norm.inverse(
++                        (int(normed * n) + np.array([0, 1])) / n)
++                    delta = abs(neighbors - data).max()
+                 g_sig_digits = cbook._g_sig_digits(data, delta)
+             else:
+                 g_sig_digits = 3  # Consistent with default below.
+2024-10-04 05:12:58,670 - INFO - Eval script for matplotlib__matplotlib-22835 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-22835/eval.sh; copying to container...
+2024-10-04 05:13:13,545 - INFO - Test runtime: 14.70 seconds
+2024-10-04 05:13:13,545 - INFO - Test output for matplotlib__matplotlib-22835 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-22835/test_output.txt
+2024-10-04 05:13:13,613 - INFO - Git diff after:
+diff --git a/lib/matplotlib/artist.py b/lib/matplotlib/artist.py
+index 1f33b9d3ec..24a60fd4d1 100644
+--- a/lib/matplotlib/artist.py
++++ b/lib/matplotlib/artist.py
+@@ -12,6 +12,7 @@ import numpy as np
+ 
+ import matplotlib as mpl
+ from . import _api, cbook
++from .colors import BoundaryNorm
+ from .cm import ScalarMappable
+ from .path import Path
+ from .transforms import (Bbox, IdentityTransform, Transform, TransformedBbox,
+@@ -1303,10 +1304,20 @@ class Artist:
+                 return "[]"
+             normed = self.norm(data)
+             if np.isfinite(normed):
+-                # Midpoints of neighboring color intervals.
+-                neighbors = self.norm.inverse(
+-                    (int(self.norm(data) * n) + np.array([0, 1])) / n)
+-                delta = abs(neighbors - data).max()
++                if isinstance(self.norm, BoundaryNorm):
++                    # not an invertible normalization mapping
++                    cur_idx = np.argmin(np.abs(self.norm.boundaries - data))
++                    neigh_idx = max(0, cur_idx - 1)
++                    # use max diff to prevent delta == 0
++                    delta = np.diff(
++                        self.norm.boundaries[neigh_idx:cur_idx + 2]
++                    ).max()
++
++                else:
++                    # Midpoints of neighboring color intervals.
++                    neighbors = self.norm.inverse(
++                        (int(normed * n) + np.array([0, 1])) / n)
++                    delta = abs(neighbors - data).max()
+                 g_sig_digits = cbook._g_sig_digits(data, delta)
+             else:
+                 g_sig_digits = 3  # Consistent with default below.
+2024-10-04 05:13:13,613 - INFO - Grading answer for matplotlib__matplotlib-22835...
+2024-10-04 05:13:13,615 - INFO - report: {'matplotlib__matplotlib-22835': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['lib/matplotlib/tests/test_artist.py::test_format_cursor_data_BoundaryNorm'], 'failure': []}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_artist.py::test_patch_transform_of_none', 'lib/matplotlib/tests/test_artist.py::test_collection_transform_of_none', 'lib/matplotlib/tests/test_artist.py::test_clipping[png]', 'lib/matplotlib/tests/test_artist.py::test_clipping[pdf]', 'lib/matplotlib/tests/test_artist.py::test_clipping_zoom[png]', 'lib/matplotlib/tests/test_artist.py::test_cull_markers', 'lib/matplotlib/tests/test_artist.py::test_hatching[png]', 'lib/matplotlib/tests/test_artist.py::test_hatching[pdf]', 'lib/matplotlib/tests/test_artist.py::test_remove', 'lib/matplotlib/tests/test_artist.py::test_default_edges[png]', 'lib/matplotlib/tests/test_artist.py::test_properties', 'lib/matplotlib/tests/test_artist.py::test_setp', 'lib/matplotlib/tests/test_artist.py::test_None_zorder', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_valid_values[-unknown]', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_valid_values[ACCEPTS:', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_valid_values[..', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_valid_values[arg', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_valid_values[*arg', 'lib/matplotlib/tests/test_artist.py::test_artist_inspector_get_aliases', 'lib/matplotlib/tests/test_artist.py::test_set_alpha', 'lib/matplotlib/tests/test_artist.py::test_set_alpha_for_array', 'lib/matplotlib/tests/test_artist.py::test_callbacks', 'lib/matplotlib/tests/test_artist.py::test_set_signature', 'lib/matplotlib/tests/test_artist.py::test_set_is_overwritten'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-22835: resolved: True
+2024-10-04 05:13:13,615 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-22835.validate-gold...
+2024-10-04 05:13:30,781 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-22835.validate-gold...
+2024-10-04 05:13:30,807 - INFO - Container sweb.eval.matplotlib__matplotlib-22835.validate-gold removed.
+2024-10-04 05:13:30,807 - INFO - Attempting to remove image sweb.eval.x86_64.matplotlib__matplotlib-22835:latest...
+2024-10-04 05:13:36,355 - INFO - Image sweb.eval.x86_64.matplotlib__matplotlib-22835:latest removed.

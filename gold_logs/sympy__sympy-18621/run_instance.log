@@ -1,0 +1,49 @@
+2024-10-04 06:06:43,958 - INFO - Environment image sweb.env.x86_64.c795f4b88616b8462021ed:latest found for sympy__sympy-18621
+Building instance image sweb.eval.x86_64.sympy__sympy-18621:latest for sympy__sympy-18621
+2024-10-04 06:07:11,475 - INFO - Creating container for sympy__sympy-18621...
+2024-10-04 06:07:11,520 - INFO - Container for sympy__sympy-18621 created: d10a6788479592104c29ba2c46147aecef7c08206bac040d38ee54ff8d5863fe
+2024-10-04 06:07:11,916 - INFO - Container for sympy__sympy-18621 started: d10a6788479592104c29ba2c46147aecef7c08206bac040d38ee54ff8d5863fe
+2024-10-04 06:07:11,916 - INFO - Intermediate patch for sympy__sympy-18621 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-18621/patch.diff, now applying to container...
+2024-10-04 06:07:12,184 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 06:07:12,251 - INFO - >>>>> Applied Patch:
+patching file sympy/matrices/expressions/blockmatrix.py
+
+2024-10-04 06:07:12,901 - INFO - Git diff before:
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index 11aebbc59f..b821c42845 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -301,7 +301,7 @@ def blocks(self):
+         data = [[mats[i] if i == j else ZeroMatrix(mats[i].rows, mats[j].cols)
+                         for j in range(len(mats))]
+                         for i in range(len(mats))]
+-        return ImmutableDenseMatrix(data)
++        return ImmutableDenseMatrix(data, evaluate=False)
+ 
+     @property
+     def shape(self):
+2024-10-04 06:07:12,901 - INFO - Eval script for sympy__sympy-18621 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-18621/eval.sh; copying to container...
+2024-10-04 06:07:18,614 - INFO - Test runtime: 5.53 seconds
+2024-10-04 06:07:18,614 - INFO - Test output for sympy__sympy-18621 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-18621/test_output.txt
+2024-10-04 06:07:18,684 - INFO - Git diff after:
+diff --git a/sympy/matrices/expressions/blockmatrix.py b/sympy/matrices/expressions/blockmatrix.py
+index 11aebbc59f..b821c42845 100644
+--- a/sympy/matrices/expressions/blockmatrix.py
++++ b/sympy/matrices/expressions/blockmatrix.py
+@@ -301,7 +301,7 @@ def blocks(self):
+         data = [[mats[i] if i == j else ZeroMatrix(mats[i].rows, mats[j].cols)
+                         for j in range(len(mats))]
+                         for i in range(len(mats))]
+-        return ImmutableDenseMatrix(data)
++        return ImmutableDenseMatrix(data, evaluate=False)
+ 
+     @property
+     def shape(self):
+2024-10-04 06:07:18,684 - INFO - Grading answer for sympy__sympy-18621...
+2024-10-04 06:07:18,686 - INFO - report: {'sympy__sympy-18621': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_issue_18618'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_bc_matmul', 'test_bc_matadd', 'test_bc_transpose', 'test_bc_dist_diag', 'test_block_plus_ident', 'test_BlockMatrix', 'test_block_collapse_explicit_matrices', 'test_issue_17624', 'test_BlockMatrix_trace', 'test_BlockMatrix_Determinant', 'test_squareBlockMatrix', 'test_BlockDiagMatrix', 'test_blockcut', 'test_reblock_2x2', 'test_deblock'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18621: resolved: True
+2024-10-04 06:07:18,686 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18621.validate-gold...
+2024-10-04 06:07:33,951 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18621.validate-gold...
+2024-10-04 06:07:33,976 - INFO - Container sweb.eval.sympy__sympy-18621.validate-gold removed.
+2024-10-04 06:07:33,977 - INFO - Attempting to remove image sweb.eval.x86_64.sympy__sympy-18621:latest...
+2024-10-04 06:07:34,078 - INFO - Image sweb.eval.x86_64.sympy__sympy-18621:latest removed.

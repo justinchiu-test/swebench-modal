@@ -1,0 +1,64 @@
+2024-10-04 05:59:27,420 - INFO - Environment image sweb.env.x86_64.c795f4b88616b8462021ed:latest found for sympy__sympy-13437
+Building instance image sweb.eval.x86_64.sympy__sympy-13437:latest for sympy__sympy-13437
+2024-10-04 05:59:54,122 - INFO - Creating container for sympy__sympy-13437...
+2024-10-04 05:59:54,160 - INFO - Container for sympy__sympy-13437 created: ba684393b1a8882f00fd64a0b39809ef7c552d644a440416291059f32953350e
+2024-10-04 05:59:54,480 - INFO - Container for sympy__sympy-13437 started: ba684393b1a8882f00fd64a0b39809ef7c552d644a440416291059f32953350e
+2024-10-04 05:59:54,481 - INFO - Intermediate patch for sympy__sympy-13437 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13437/patch.diff, now applying to container...
+2024-10-04 05:59:54,716 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:59:54,808 - INFO - >>>>> Applied Patch:
+patching file sympy/functions/combinatorial/numbers.py
+Hunk #1 succeeded at 434 (offset 10 lines).
+
+2024-10-04 05:59:55,280 - INFO - Git diff before:
+diff --git a/sympy/functions/combinatorial/numbers.py b/sympy/functions/combinatorial/numbers.py
+index 896729ac87..9e2800dfbd 100644
+--- a/sympy/functions/combinatorial/numbers.py
++++ b/sympy/functions/combinatorial/numbers.py
+@@ -434,6 +434,15 @@ def _bell_incomplete_poly(n, k, symbols):
+ 
+     @classmethod
+     def eval(cls, n, k_sym=None, symbols=None):
++        if n is S.Infinity:
++            if k_sym is None:
++                return S.Infinity
++            else:
++                raise ValueError("Bell polynomial is not defined")
++
++        if n.is_negative or n.is_integer is False:
++            raise ValueError("a non-negative integer expected")
++
+         if n.is_Integer and n.is_nonnegative:
+             if k_sym is None:
+                 return Integer(cls._bell(int(n)))
+2024-10-04 05:59:55,280 - INFO - Eval script for sympy__sympy-13437 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13437/eval.sh; copying to container...
+2024-10-04 06:09:51,450 - INFO - Test runtime: 596.01 seconds
+2024-10-04 06:09:51,451 - INFO - Test output for sympy__sympy-13437 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13437/test_output.txt
+2024-10-04 06:09:51,537 - INFO - Git diff after:
+diff --git a/sympy/functions/combinatorial/numbers.py b/sympy/functions/combinatorial/numbers.py
+index 896729ac87..9e2800dfbd 100644
+--- a/sympy/functions/combinatorial/numbers.py
++++ b/sympy/functions/combinatorial/numbers.py
+@@ -434,6 +434,15 @@ def _bell_incomplete_poly(n, k, symbols):
+ 
+     @classmethod
+     def eval(cls, n, k_sym=None, symbols=None):
++        if n is S.Infinity:
++            if k_sym is None:
++                return S.Infinity
++            else:
++                raise ValueError("Bell polynomial is not defined")
++
++        if n.is_negative or n.is_integer is False:
++            raise ValueError("a non-negative integer expected")
++
+         if n.is_Integer and n.is_nonnegative:
+             if k_sym is None:
+                 return Integer(cls._bell(int(n)))
+2024-10-04 06:09:51,537 - INFO - Grading answer for sympy__sympy-13437...
+2024-10-04 06:09:51,540 - INFO - report: {'sympy__sympy-13437': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_bell'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_bernoulli', 'test_fibonacci', 'test_harmonic', 'test_harmonic_rational', 'test_harmonic_evalf', 'test_harmonic_rewrite_polygamma', 'test_harmonic_rewrite_sum', 'test_euler', 'test_euler_odd', 'test_euler_polynomials', 'test_euler_polynomial_rewrite', 'test_catalan', 'test_genocchi', 'test_nC_nP_nT', 'test_issue_8496'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-13437: resolved: True
+2024-10-04 06:09:51,541 - INFO - Attempting to stop container sweb.eval.sympy__sympy-13437.validate-gold...
+2024-10-04 06:10:07,257 - INFO - Attempting to remove container sweb.eval.sympy__sympy-13437.validate-gold...
+2024-10-04 06:10:07,286 - INFO - Container sweb.eval.sympy__sympy-13437.validate-gold removed.
+2024-10-04 06:10:07,286 - INFO - Attempting to remove image sweb.eval.x86_64.sympy__sympy-13437:latest...
+2024-10-04 06:10:07,402 - INFO - Image sweb.eval.x86_64.sympy__sympy-13437:latest removed.

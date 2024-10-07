@@ -1,0 +1,93 @@
+2024-10-04 05:39:40,922 - INFO - Environment image sweb.env.x86_64.aa92880033da20ca313928:latest found for scikit-learn__scikit-learn-13497
+Building instance image sweb.eval.x86_64.scikit-learn__scikit-learn-13497:latest for scikit-learn__scikit-learn-13497
+2024-10-04 05:46:20,934 - INFO - Creating container for scikit-learn__scikit-learn-13497...
+2024-10-04 05:46:20,965 - INFO - Container for scikit-learn__scikit-learn-13497 created: 0c25504837de8367b316420829a3225369f1fbf324f6c210fb898b3a500a6f1a
+2024-10-04 05:46:21,297 - INFO - Container for scikit-learn__scikit-learn-13497 started: 0c25504837de8367b316420829a3225369f1fbf324f6c210fb898b3a500a6f1a
+2024-10-04 05:46:21,297 - INFO - Intermediate patch for scikit-learn__scikit-learn-13497 written to logs/run_evaluation/validate-gold/gold/scikit-learn__scikit-learn-13497/patch.diff, now applying to container...
+2024-10-04 05:46:21,530 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:46:21,588 - INFO - >>>>> Applied Patch:
+patching file sklearn/feature_selection/mutual_info_.py
+
+2024-10-04 05:46:21,927 - INFO - Git diff before:
+diff --git a/sklearn/feature_selection/mutual_info_.py b/sklearn/feature_selection/mutual_info_.py
+index d5d1b7fb5..2085352a2 100644
+--- a/sklearn/feature_selection/mutual_info_.py
++++ b/sklearn/feature_selection/mutual_info_.py
+@@ -10,7 +10,7 @@ from ..neighbors import NearestNeighbors
+ from ..preprocessing import scale
+ from ..utils import check_random_state
+ from ..utils.fixes import _astype_copy_false
+-from ..utils.validation import check_X_y
++from ..utils.validation import check_array, check_X_y
+ from ..utils.multiclass import check_classification_targets
+ 
+ 
+@@ -247,14 +247,16 @@ def _estimate_mi(X, y, discrete_features='auto', discrete_target=False,
+     X, y = check_X_y(X, y, accept_sparse='csc', y_numeric=not discrete_target)
+     n_samples, n_features = X.shape
+ 
+-    if discrete_features == 'auto':
+-        discrete_features = issparse(X)
+-
+-    if isinstance(discrete_features, bool):
++    if isinstance(discrete_features, (str, bool)):
++        if isinstance(discrete_features, str):
++            if discrete_features == 'auto':
++                discrete_features = issparse(X)
++            else:
++                raise ValueError("Invalid string value for discrete_features.")
+         discrete_mask = np.empty(n_features, dtype=bool)
+         discrete_mask.fill(discrete_features)
+     else:
+-        discrete_features = np.asarray(discrete_features)
++        discrete_features = check_array(discrete_features, ensure_2d=False)
+         if discrete_features.dtype != 'bool':
+             discrete_mask = np.zeros(n_features, dtype=bool)
+             discrete_mask[discrete_features] = True
+2024-10-04 05:46:21,927 - INFO - Eval script for scikit-learn__scikit-learn-13497 written to logs/run_evaluation/validate-gold/gold/scikit-learn__scikit-learn-13497/eval.sh; copying to container...
+2024-10-04 05:46:27,634 - INFO - Test runtime: 5.53 seconds
+2024-10-04 05:46:27,634 - INFO - Test output for scikit-learn__scikit-learn-13497 written to logs/run_evaluation/validate-gold/gold/scikit-learn__scikit-learn-13497/test_output.txt
+2024-10-04 05:46:28,069 - INFO - Git diff after:
+diff --git a/sklearn/feature_selection/mutual_info_.py b/sklearn/feature_selection/mutual_info_.py
+index d5d1b7fb5..2085352a2 100644
+--- a/sklearn/feature_selection/mutual_info_.py
++++ b/sklearn/feature_selection/mutual_info_.py
+@@ -10,7 +10,7 @@ from ..neighbors import NearestNeighbors
+ from ..preprocessing import scale
+ from ..utils import check_random_state
+ from ..utils.fixes import _astype_copy_false
+-from ..utils.validation import check_X_y
++from ..utils.validation import check_array, check_X_y
+ from ..utils.multiclass import check_classification_targets
+ 
+ 
+@@ -247,14 +247,16 @@ def _estimate_mi(X, y, discrete_features='auto', discrete_target=False,
+     X, y = check_X_y(X, y, accept_sparse='csc', y_numeric=not discrete_target)
+     n_samples, n_features = X.shape
+ 
+-    if discrete_features == 'auto':
+-        discrete_features = issparse(X)
+-
+-    if isinstance(discrete_features, bool):
++    if isinstance(discrete_features, (str, bool)):
++        if isinstance(discrete_features, str):
++            if discrete_features == 'auto':
++                discrete_features = issparse(X)
++            else:
++                raise ValueError("Invalid string value for discrete_features.")
+         discrete_mask = np.empty(n_features, dtype=bool)
+         discrete_mask.fill(discrete_features)
+     else:
+-        discrete_features = np.asarray(discrete_features)
++        discrete_features = check_array(discrete_features, ensure_2d=False)
+         if discrete_features.dtype != 'bool':
+             discrete_mask = np.zeros(n_features, dtype=bool)
+             discrete_mask[discrete_features] = True
+2024-10-04 05:46:28,069 - INFO - Grading answer for scikit-learn__scikit-learn-13497...
+2024-10-04 05:46:28,079 - INFO - report: {'scikit-learn__scikit-learn-13497': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['sklearn/feature_selection/tests/test_mutual_info.py::test_mutual_info_options'], 'failure': []}, 'PASS_TO_PASS': {'success': ['sklearn/feature_selection/tests/test_mutual_info.py::test_compute_mi_dd', 'sklearn/feature_selection/tests/test_mutual_info.py::test_compute_mi_cc', 'sklearn/feature_selection/tests/test_mutual_info.py::test_compute_mi_cd', 'sklearn/feature_selection/tests/test_mutual_info.py::test_compute_mi_cd_unique_label', 'sklearn/feature_selection/tests/test_mutual_info.py::test_mutual_info_classif_discrete', 'sklearn/feature_selection/tests/test_mutual_info.py::test_mutual_info_regression', 'sklearn/feature_selection/tests/test_mutual_info.py::test_mutual_info_classif_mixed'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for scikit-learn__scikit-learn-13497: resolved: True
+2024-10-04 05:46:28,079 - INFO - Attempting to stop container sweb.eval.scikit-learn__scikit-learn-13497.validate-gold...
+2024-10-04 05:46:43,501 - INFO - Attempting to remove container sweb.eval.scikit-learn__scikit-learn-13497.validate-gold...
+2024-10-04 05:46:43,521 - INFO - Container sweb.eval.scikit-learn__scikit-learn-13497.validate-gold removed.
+2024-10-04 05:46:43,521 - INFO - Attempting to remove image sweb.eval.x86_64.scikit-learn__scikit-learn-13497:latest...
+2024-10-04 05:46:43,682 - INFO - Image sweb.eval.x86_64.scikit-learn__scikit-learn-13497:latest removed.

@@ -1,0 +1,181 @@
+2024-10-04 05:06:17,836 - INFO - Environment image sweb.env.x86_64.6b007979cf533f0f3016e8:latest found for matplotlib__matplotlib-18869
+Building instance image sweb.eval.x86_64.matplotlib__matplotlib-18869:latest for matplotlib__matplotlib-18869
+2024-10-04 05:12:26,965 - INFO - Creating container for matplotlib__matplotlib-18869...
+2024-10-04 05:12:27,128 - INFO - Container for matplotlib__matplotlib-18869 created: d84b5a0b054f46856a66d1dd32f89e90809f27b2b1d2b81655a457e32cd7e5af
+2024-10-04 05:12:27,777 - INFO - Container for matplotlib__matplotlib-18869 started: d84b5a0b054f46856a66d1dd32f89e90809f27b2b1d2b81655a457e32cd7e5af
+2024-10-04 05:12:27,778 - INFO - Intermediate patch for matplotlib__matplotlib-18869 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-18869/patch.diff, now applying to container...
+2024-10-04 05:12:28,158 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:12:28,217 - INFO - >>>>> Applied Patch:
+patching file lib/matplotlib/__init__.py
+
+2024-10-04 05:12:30,082 - INFO - Git diff before:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..92ef93e007 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -129,25 +129,60 @@ __bibtex__ = r"""@Article{Hunter:2007,
+   year      = 2007
+ }"""
+ 
++# modelled after sys.version_info
++_VersionInfo = namedtuple('_VersionInfo',
++                          'major, minor, micro, releaselevel, serial')
+ 
+-def __getattr__(name):
+-    if name == "__version__":
++
++def _parse_to_version_info(version_str):
++    """
++    Parse a version string to a namedtuple analogous to sys.version_info.
++
++    See:
++    https://packaging.pypa.io/en/latest/version.html#packaging.version.parse
++    https://docs.python.org/3/library/sys.html#sys.version_info
++    """
++    v = parse_version(version_str)
++    if v.pre is None and v.post is None and v.dev is None:
++        return _VersionInfo(v.major, v.minor, v.micro, 'final', 0)
++    elif v.dev is not None:
++        return _VersionInfo(v.major, v.minor, v.micro, 'alpha', v.dev)
++    elif v.pre is not None:
++        releaselevel = {
++            'a': 'alpha',
++            'b': 'beta',
++            'rc': 'candidate'}.get(v.pre[0], 'alpha')
++        return _VersionInfo(v.major, v.minor, v.micro, releaselevel, v.pre[1])
++    else:
++        # fallback for v.post: guess-next-dev scheme from setuptools_scm
++        return _VersionInfo(v.major, v.minor, v.micro + 1, 'alpha', v.post)
++
++
++def _get_version():
++    """Return the version string used for __version__."""
++    # Only shell out to a git subprocess if really needed, and not on a
++    # shallow clone, such as those used by CI, as the latter would trigger
++    # a warning from setuptools_scm.
++    root = Path(__file__).resolve().parents[2]
++    if (root / ".git").exists() and not (root / ".git/shallow").exists():
+         import setuptools_scm
++        return setuptools_scm.get_version(
++            root=root,
++            version_scheme="post-release",
++            local_scheme="node-and-date",
++            fallback_version=_version.version,
++        )
++    else:  # Get the version from the _version.py setuptools_scm file.
++        return _version.version
++
++
++def __getattr__(name):
++    if name in ("__version__", "__version_info__"):
+         global __version__  # cache it.
+-        # Only shell out to a git subprocess if really needed, and not on a
+-        # shallow clone, such as those used by CI, as the latter would trigger
+-        # a warning from setuptools_scm.
+-        root = Path(__file__).resolve().parents[2]
+-        if (root / ".git").exists() and not (root / ".git/shallow").exists():
+-            __version__ = setuptools_scm.get_version(
+-                root=root,
+-                version_scheme="post-release",
+-                local_scheme="node-and-date",
+-                fallback_version=_version.version,
+-            )
+-        else:  # Get the version from the _version.py setuptools_scm file.
+-            __version__ = _version.version
+-        return __version__
++        __version__ = _get_version()
++        global __version__info__  # cache it.
++        __version_info__ = _parse_to_version_info(__version__)
++        return __version__ if name == "__version__" else __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+2024-10-04 05:12:30,082 - INFO - Eval script for matplotlib__matplotlib-18869 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-18869/eval.sh; copying to container...
+2024-10-04 05:12:53,281 - INFO - Test runtime: 22.60 seconds
+2024-10-04 05:12:53,282 - INFO - Test output for matplotlib__matplotlib-18869 written to logs/run_evaluation/validate-gold/gold/matplotlib__matplotlib-18869/test_output.txt
+2024-10-04 05:12:53,354 - INFO - Git diff after:
+diff --git a/lib/matplotlib/__init__.py b/lib/matplotlib/__init__.py
+index b657a35cf7..92ef93e007 100644
+--- a/lib/matplotlib/__init__.py
++++ b/lib/matplotlib/__init__.py
+@@ -129,25 +129,60 @@ __bibtex__ = r"""@Article{Hunter:2007,
+   year      = 2007
+ }"""
+ 
++# modelled after sys.version_info
++_VersionInfo = namedtuple('_VersionInfo',
++                          'major, minor, micro, releaselevel, serial')
+ 
+-def __getattr__(name):
+-    if name == "__version__":
++
++def _parse_to_version_info(version_str):
++    """
++    Parse a version string to a namedtuple analogous to sys.version_info.
++
++    See:
++    https://packaging.pypa.io/en/latest/version.html#packaging.version.parse
++    https://docs.python.org/3/library/sys.html#sys.version_info
++    """
++    v = parse_version(version_str)
++    if v.pre is None and v.post is None and v.dev is None:
++        return _VersionInfo(v.major, v.minor, v.micro, 'final', 0)
++    elif v.dev is not None:
++        return _VersionInfo(v.major, v.minor, v.micro, 'alpha', v.dev)
++    elif v.pre is not None:
++        releaselevel = {
++            'a': 'alpha',
++            'b': 'beta',
++            'rc': 'candidate'}.get(v.pre[0], 'alpha')
++        return _VersionInfo(v.major, v.minor, v.micro, releaselevel, v.pre[1])
++    else:
++        # fallback for v.post: guess-next-dev scheme from setuptools_scm
++        return _VersionInfo(v.major, v.minor, v.micro + 1, 'alpha', v.post)
++
++
++def _get_version():
++    """Return the version string used for __version__."""
++    # Only shell out to a git subprocess if really needed, and not on a
++    # shallow clone, such as those used by CI, as the latter would trigger
++    # a warning from setuptools_scm.
++    root = Path(__file__).resolve().parents[2]
++    if (root / ".git").exists() and not (root / ".git/shallow").exists():
+         import setuptools_scm
++        return setuptools_scm.get_version(
++            root=root,
++            version_scheme="post-release",
++            local_scheme="node-and-date",
++            fallback_version=_version.version,
++        )
++    else:  # Get the version from the _version.py setuptools_scm file.
++        return _version.version
++
++
++def __getattr__(name):
++    if name in ("__version__", "__version_info__"):
+         global __version__  # cache it.
+-        # Only shell out to a git subprocess if really needed, and not on a
+-        # shallow clone, such as those used by CI, as the latter would trigger
+-        # a warning from setuptools_scm.
+-        root = Path(__file__).resolve().parents[2]
+-        if (root / ".git").exists() and not (root / ".git/shallow").exists():
+-            __version__ = setuptools_scm.get_version(
+-                root=root,
+-                version_scheme="post-release",
+-                local_scheme="node-and-date",
+-                fallback_version=_version.version,
+-            )
+-        else:  # Get the version from the _version.py setuptools_scm file.
+-            __version__ = _version.version
+-        return __version__
++        __version__ = _get_version()
++        global __version__info__  # cache it.
++        __version_info__ = _parse_to_version_info(__version__)
++        return __version__ if name == "__version__" else __version_info__
+     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+2024-10-04 05:12:53,354 - INFO - Grading answer for matplotlib__matplotlib-18869...
+2024-10-04 05:12:53,357 - INFO - report: {'matplotlib__matplotlib-18869': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0-version_tuple0]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0rc2-version_tuple1]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.dev820+g6768ef8c4c-version_tuple2]', 'lib/matplotlib/tests/test_matplotlib.py::test_parse_to_version_info[3.5.0.post820+g6768ef8c4c-version_tuple3]'], 'failure': []}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_matplotlib.py::test_importable_with_no_home', 'lib/matplotlib/tests/test_matplotlib.py::test_use_doc_standard_backends', 'lib/matplotlib/tests/test_matplotlib.py::test_importable_with__OO'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-18869: resolved: True
+2024-10-04 05:12:53,357 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-18869.validate-gold...
+2024-10-04 05:13:08,679 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-18869.validate-gold...
+2024-10-04 05:13:10,274 - INFO - Container sweb.eval.matplotlib__matplotlib-18869.validate-gold removed.
+2024-10-04 05:13:10,274 - INFO - Attempting to remove image sweb.eval.x86_64.matplotlib__matplotlib-18869:latest...
+2024-10-04 05:13:13,144 - INFO - Image sweb.eval.x86_64.matplotlib__matplotlib-18869:latest removed.

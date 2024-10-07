@@ -1,0 +1,249 @@
+2024-10-04 04:59:20,529 - INFO - Building image sweb.eval.x86_64.django__django-14752:latest
+Using dockerfile:
+FROM --platform=linux/x86_64 sweb.env.x86_64.297af196949a2a635bce66:latest
+
+COPY ./setup_repo.sh /root/
+RUN /bin/bash /root/setup_repo.sh
+
+WORKDIR /testbed/
+
+Adding (1) setup scripts to image build repo
+2024-10-04 04:59:20,529 - INFO - [SETUP SCRIPT] setup_repo.sh:
+#!/bin/bash
+set -euxo pipefail
+git clone -o origin https://github.com/django/django /testbed
+chmod -R 777 /testbed
+cd /testbed
+git reset --hard b64db05b9cedd96905d637a2d824cbbf428e40e7
+git remote remove origin
+source /opt/miniconda3/bin/activate
+conda activate testbed
+echo "Current environment: $CONDA_DEFAULT_ENV"
+python -m pip install -e .
+
+2024-10-04 04:59:20,530 - INFO - Building docker image sweb.eval.x86_64.django__django-14752:latest in logs/build_images/instances/sweb.eval.x86_64.django__django-14752__latest with platform linux/x86_64
+2024-10-04 04:59:27,108 - INFO - Step 1/4 : FROM --platform=linux/x86_64 sweb.env.x86_64.297af196949a2a635bce66:latest
+2024-10-04 04:59:27,108 - INFO - 
+2024-10-04 04:59:27,109 - INFO - ---> c498f6960307
+2024-10-04 04:59:27,109 - INFO - Step 2/4 : COPY ./setup_repo.sh /root/
+2024-10-04 04:59:27,109 - INFO - 
+2024-10-04 04:59:28,044 - INFO - ---> c7933dcd0675
+2024-10-04 04:59:28,044 - INFO - Step 3/4 : RUN /bin/bash /root/setup_repo.sh
+2024-10-04 04:59:28,045 - INFO - 
+2024-10-04 04:59:28,086 - INFO - ---> Running in 4f901e8166bd
+2024-10-04 04:59:28,678 - INFO - + git clone -o origin https://github.com/django/django /testbed
+2024-10-04 04:59:28,680 - INFO - Cloning into '/testbed'...
+2024-10-04 04:59:53,517 - INFO - Updating files:  98% (6712/6833)
+2024-10-04 04:59:53,521 - INFO - Updating files:  99% (6765/6833)
+2024-10-04 04:59:53,546 - INFO - Updating files: 100% (6833/6833)Updating files: 100% (6833/6833), done.
+2024-10-04 04:59:53,573 - INFO - + chmod -R 777 /testbed
+2024-10-04 04:59:53,805 - INFO - + cd /testbed
++ git reset --hard b64db05b9cedd96905d637a2d824cbbf428e40e7
+2024-10-04 04:59:54,883 - INFO - Updating files:  60% (4181/6883)
+2024-10-04 04:59:54,887 - INFO - Updating files:  61% (4199/6883)
+2024-10-04 04:59:54,898 - INFO - Updating files:  62% (4268/6883)
+2024-10-04 04:59:54,910 - INFO - Updating files:  63% (4337/6883)
+2024-10-04 04:59:54,925 - INFO - Updating files:  64% (4406/6883)
+2024-10-04 04:59:54,954 - INFO - Updating files:  65% (4474/6883)
+2024-10-04 04:59:54,972 - INFO - Updating files:  66% (4543/6883)
+2024-10-04 04:59:54,983 - INFO - Updating files:  67% (4612/6883)
+2024-10-04 04:59:54,998 - INFO - Updating files:  68% (4681/6883)
+2024-10-04 04:59:55,007 - INFO - Updating files:  69% (4750/6883)
+2024-10-04 04:59:55,020 - INFO - Updating files:  70% (4819/6883)
+2024-10-04 04:59:55,031 - INFO - Updating files:  71% (4887/6883)
+2024-10-04 04:59:55,042 - INFO - Updating files:  72% (4956/6883)
+2024-10-04 04:59:55,051 - INFO - Updating files:  73% (5025/6883)
+2024-10-04 04:59:55,064 - INFO - Updating files:  74% (5094/6883)
+2024-10-04 04:59:55,072 - INFO - Updating files:  75% (5163/6883)
+2024-10-04 04:59:55,080 - INFO - Updating files:  76% (5232/6883)
+2024-10-04 04:59:55,093 - INFO - Updating files:  77% (5300/6883)
+2024-10-04 04:59:55,106 - INFO - Updating files:  78% (5369/6883)
+2024-10-04 04:59:55,118 - INFO - Updating files:  79% (5438/6883)
+2024-10-04 04:59:55,128 - INFO - Updating files:  80% (5507/6883)
+2024-10-04 04:59:55,136 - INFO - Updating files:  81% (5576/6883)
+2024-10-04 04:59:55,149 - INFO - Updating files:  82% (5645/6883)
+2024-10-04 04:59:55,159 - INFO - Updating files:  83% (5713/6883)
+2024-10-04 04:59:55,166 - INFO - Updating files:  84% (5782/6883)
+2024-10-04 04:59:55,174 - INFO - Updating files:  85% (5851/6883)
+2024-10-04 04:59:55,183 - INFO - Updating files:  86% (5920/6883)
+2024-10-04 04:59:55,194 - INFO - Updating files:  87% (5989/6883)
+2024-10-04 04:59:55,203 - INFO - Updating files:  88% (6058/6883)
+2024-10-04 04:59:55,214 - INFO - Updating files:  89% (6126/6883)
+2024-10-04 04:59:55,223 - INFO - Updating files:  90% (6195/6883)
+2024-10-04 04:59:55,228 - INFO - Updating files:  91% (6264/6883)
+2024-10-04 04:59:55,234 - INFO - Updating files:  92% (6333/6883)
+2024-10-04 04:59:55,240 - INFO - Updating files:  93% (6402/6883)
+2024-10-04 04:59:55,246 - INFO - Updating files:  94% (6471/6883)
+2024-10-04 04:59:55,252 - INFO - Updating files:  95% (6539/6883)
+2024-10-04 04:59:55,262 - INFO - Updating files:  96% (6608/6883)
+2024-10-04 04:59:55,271 - INFO - Updating files:  97% (6677/6883)
+2024-10-04 04:59:55,279 - INFO - Updating files:  98% (6746/6883)
+2024-10-04 04:59:55,291 - INFO - Updating files:  99% (6815/6883)
+2024-10-04 04:59:55,299 - INFO - Updating files: 100% (6883/6883)
+2024-10-04 04:59:55,299 - INFO - Updating files: 100% (6883/6883), done.
+2024-10-04 04:59:55,345 - INFO - HEAD is now at b64db05b9c Removed unnecessary WhereNode.is_summary.
+2024-10-04 04:59:55,358 - INFO - + git remote remove origin
+2024-10-04 04:59:55,378 - INFO - + source /opt/miniconda3/bin/activate
+2024-10-04 04:59:55,379 - INFO - ++ _CONDA_ROOT=/opt/miniconda3
+2024-10-04 04:59:55,379 - INFO - ++ . /opt/miniconda3/etc/profile.d/conda.sh
++++ export CONDA_EXE=/opt/miniconda3/bin/conda
++++ CONDA_EXE=/opt/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
++++ export _CE_CONDA=
++++ _CE_CONDA=
++++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++++ '[' -z '' ']'
++++ export CONDA_SHLVL=0
++++ CONDA_SHLVL=0
++++ '[' -n '' ']'
+2024-10-04 04:59:55,380 - INFO - +++++ dirname /opt/miniconda3/bin/conda
+2024-10-04 04:59:55,381 - INFO - ++++ dirname /opt/miniconda3/bin
+2024-10-04 04:59:55,382 - INFO - +++ PATH=/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++++ export PATH
++++ '[' -z '' ']'
++++ PS1=
+2024-10-04 04:59:55,383 - INFO - ++ conda activate
+++ local cmd=activate
+++ case "$cmd" in
+++ __conda_activate activate
+++ '[' -n '' ']'
+++ local ask_conda
+2024-10-04 04:59:55,383 - INFO - +++ PS1=
++++ __conda_exe shell.posix activate
+2024-10-04 04:59:55,383 - INFO - +++ /opt/miniconda3/bin/conda shell.posix activate
+2024-10-04 04:59:55,562 - INFO - ++ ask_conda='PS1='\''(base) '\''
+export PATH='\''/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
+++ eval 'PS1='\''(base) '\''
+export PATH='\''/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
++++ PS1='(base) '
++++ export PATH=/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++++ PATH=/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+2024-10-04 04:59:55,562 - INFO - +++ export CONDA_PREFIX=/opt/miniconda3
++++ CONDA_PREFIX=/opt/miniconda3
++++ export CONDA_SHLVL=1
++++ CONDA_SHLVL=1
++++ export CONDA_DEFAULT_ENV=base
++++ CONDA_DEFAULT_ENV=base
++++ export 'CONDA_PROMPT_MODIFIER=(base) '
++++ CONDA_PROMPT_MODIFIER='(base) '
+2024-10-04 04:59:55,563 - INFO - +++ export CONDA_EXE=/opt/miniconda3/bin/conda
++++ CONDA_EXE=/opt/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
++++ export _CE_CONDA=
++++ _CE_CONDA=
++++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
+++ __conda_hashr
+++ '[' -n '' ']'
+++ '[' -n '' ']'
+++ hash -r
++ conda activate testbed
++ local cmd=activate
++ case "$cmd" in
++ __conda_activate activate testbed
++ '[' -n '' ']'
++ local ask_conda
+++ PS1='(base) '
+++ __conda_exe shell.posix activate testbed
+2024-10-04 04:59:55,564 - INFO - ++ /opt/miniconda3/bin/conda shell.posix activate testbed
+2024-10-04 04:59:55,953 - INFO - + ask_conda='PS1='\''(testbed) '\''
+export PATH='\''/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3/envs/testbed'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''testbed'\''
+export CONDA_PROMPT_MODIFIER='\''(testbed) '\''
+export CONDA_PREFIX_1='\''/opt/miniconda3'\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
++ eval 'PS1='\''(testbed) '\''
+export PATH='\''/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3/envs/testbed'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''testbed'\''
+export CONDA_PROMPT_MODIFIER='\''(testbed) '\''
+export CONDA_PREFIX_1='\''/opt/miniconda3'\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
+++ PS1='(testbed) '
+++ export PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ export CONDA_PREFIX=/opt/miniconda3/envs/testbed
+++ CONDA_PREFIX=/opt/miniconda3/envs/testbed
+2024-10-04 04:59:55,953 - INFO - ++ export CONDA_SHLVL=2
+++ CONDA_SHLVL=2
+++ export CONDA_DEFAULT_ENV=testbed
+++ CONDA_DEFAULT_ENV=testbed
+++ export 'CONDA_PROMPT_MODIFIER=(testbed) '
+++ CONDA_PROMPT_MODIFIER='(testbed) '
+2024-10-04 04:59:55,954 - INFO - ++ export CONDA_PREFIX_1=/opt/miniconda3
+++ CONDA_PREFIX_1=/opt/miniconda3
+++ export CONDA_EXE=/opt/miniconda3/bin/conda
+++ CONDA_EXE=/opt/miniconda3/bin/conda
+++ export _CE_M=
+++ _CE_M=
+++ export _CE_CONDA=
+++ _CE_CONDA=
+2024-10-04 04:59:55,954 - INFO - ++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
+++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++ __conda_hashr
++ '[' -n '' ']'
++ '[' -n '' ']'
++ hash -r
+2024-10-04 04:59:55,954 - INFO - + echo 'Current environment: testbed'
++ python -m pip install -e .
+2024-10-04 04:59:55,954 - INFO - Current environment: testbed
+2024-10-04 04:59:56,552 - INFO - Obtaining file:///testbed
+2024-10-04 04:59:56,561 - INFO - Installing build dependencies: started
+2024-10-04 04:59:59,627 - INFO - Installing build dependencies: finished with status 'done'
+2024-10-04 04:59:59,633 - INFO - Checking if build backend supports build_editable: started
+2024-10-04 04:59:59,906 - INFO - Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+2024-10-04 05:00:00,704 - INFO - Getting requirements to build editable: finished with status 'done'
+2024-10-04 05:00:00,707 - INFO - Preparing editable metadata (pyproject.toml): started
+2024-10-04 05:00:01,409 - INFO - Preparing editable metadata (pyproject.toml): finished with status 'done'
+2024-10-04 05:00:01,428 - INFO - Requirement already satisfied: asgiref>=3.3.2 in /opt/miniconda3/envs/testbed/lib/python3.8/site-packages (from Django==4.0.dev20210809172329) (3.8.1)
+2024-10-04 05:00:01,429 - INFO - Requirement already satisfied: pytz in /opt/miniconda3/envs/testbed/lib/python3.8/site-packages (from Django==4.0.dev20210809172329) (2024.1)
+2024-10-04 05:00:01,429 - INFO - Requirement already satisfied: sqlparse>=0.2.2 in /opt/miniconda3/envs/testbed/lib/python3.8/site-packages (from Django==4.0.dev20210809172329) (0.5.1)
+2024-10-04 05:00:01,433 - INFO - Requirement already satisfied: typing-extensions>=4 in /opt/miniconda3/envs/testbed/lib/python3.8/site-packages (from asgiref>=3.3.2->Django==4.0.dev20210809172329) (4.12.2)
+2024-10-04 05:00:01,437 - INFO - Building wheels for collected packages: Django
+2024-10-04 05:00:01,439 - INFO - Building editable for Django (pyproject.toml): started
+2024-10-04 05:00:02,987 - INFO - Building editable for Django (pyproject.toml): finished with status 'done'
+2024-10-04 05:00:02,990 - INFO - Created wheel for Django: filename=Django-4.0.dev20210809172329-0.editable-py3-none-any.whl size=26616 sha256=e3fc13e7a2ac998f5008fe3d04037333adc00601801a319edef122d66b9a000e
+2024-10-04 05:00:02,990 - INFO - Stored in directory: /tmp/pip-ephem-wheel-cache-bkmvb1kj/wheels/b2/50/f1/218f2e9962a80d01a4b1297698978f9fb3b60056aa24343f24
+2024-10-04 05:00:02,995 - INFO - Successfully built Django
+2024-10-04 05:00:03,071 - INFO - Installing collected packages: Django
+2024-10-04 05:00:03,146 - INFO - Successfully installed Django-4.0.dev20210809172329
+2024-10-04 05:00:03,147 - INFO - WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable.It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2024-10-04 05:00:10,908 - INFO - ---> Removed intermediate container 4f901e8166bd
+2024-10-04 05:00:10,908 - INFO - ---> a9cd59d1c9aa
+2024-10-04 05:00:10,908 - INFO - Step 4/4 : WORKDIR /testbed/
+2024-10-04 05:00:10,908 - INFO - 
+2024-10-04 05:00:11,002 - INFO - ---> Running in 5886340826dd
+2024-10-04 05:00:11,064 - INFO - ---> Removed intermediate container 5886340826dd
+2024-10-04 05:00:11,064 - INFO - ---> dcd186193fdd
+2024-10-04 05:00:11,064 - INFO - Successfully built dcd186193fdd
+2024-10-04 05:00:11,071 - INFO - Successfully tagged sweb.eval.x86_64.django__django-14752:latest
+2024-10-04 05:00:11,071 - INFO - Image built successfully!

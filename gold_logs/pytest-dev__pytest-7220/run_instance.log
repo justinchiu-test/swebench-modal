@@ -1,0 +1,79 @@
+2024-10-04 05:33:31,075 - INFO - Environment image sweb.env.x86_64.5d1fda9d55d65d8a4e5bdb:latest found for pytest-dev__pytest-7220
+Building instance image sweb.eval.x86_64.pytest-dev__pytest-7220:latest for pytest-dev__pytest-7220
+2024-10-04 05:33:48,694 - INFO - Creating container for pytest-dev__pytest-7220...
+2024-10-04 05:33:48,734 - INFO - Container for pytest-dev__pytest-7220 created: e49050d943572452b5c7ec94fd0c023ecffead859dd12f30084c628e70e79798
+2024-10-04 05:33:49,104 - INFO - Container for pytest-dev__pytest-7220 started: e49050d943572452b5c7ec94fd0c023ecffead859dd12f30084c628e70e79798
+2024-10-04 05:33:49,104 - INFO - Intermediate patch for pytest-dev__pytest-7220 written to logs/run_evaluation/validate-gold/gold/pytest-dev__pytest-7220/patch.diff, now applying to container...
+2024-10-04 05:33:49,371 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:33:49,430 - INFO - >>>>> Applied Patch:
+patching file src/_pytest/nodes.py
+
+2024-10-04 05:33:49,586 - INFO - Git diff before:
+diff --git a/src/_pytest/nodes.py b/src/_pytest/nodes.py
+index 4a79bc861..7a8c28cd4 100644
+--- a/src/_pytest/nodes.py
++++ b/src/_pytest/nodes.py
+@@ -29,6 +29,7 @@ from _pytest.mark.structures import Mark
+ from _pytest.mark.structures import MarkDecorator
+ from _pytest.mark.structures import NodeKeywords
+ from _pytest.outcomes import fail
++from _pytest.pathlib import Path
+ from _pytest.store import Store
+ 
+ if TYPE_CHECKING:
+@@ -361,9 +362,14 @@ class Node(metaclass=NodeMeta):
+         else:
+             truncate_locals = True
+ 
++        # excinfo.getrepr() formats paths relative to the CWD if `abspath` is False.
++        # It is possible for a fixture/test to change the CWD while this code runs, which
++        # would then result in the user seeing confusing paths in the failure message.
++        # To fix this, if the CWD changed, always display the full absolute path.
++        # It will be better to just always display paths relative to invocation_dir, but
++        # this requires a lot of plumbing (#6428).
+         try:
+-            os.getcwd()
+-            abspath = False
++            abspath = Path(os.getcwd()) != Path(self.config.invocation_dir)
+         except OSError:
+             abspath = True
+2024-10-04 05:33:49,586 - INFO - Eval script for pytest-dev__pytest-7220 written to logs/run_evaluation/validate-gold/gold/pytest-dev__pytest-7220/eval.sh; copying to container...
+2024-10-04 05:33:55,821 - INFO - Test runtime: 6.04 seconds
+2024-10-04 05:33:55,821 - INFO - Test output for pytest-dev__pytest-7220 written to logs/run_evaluation/validate-gold/gold/pytest-dev__pytest-7220/test_output.txt
+2024-10-04 05:33:55,880 - INFO - Git diff after:
+diff --git a/src/_pytest/nodes.py b/src/_pytest/nodes.py
+index 4a79bc861..7a8c28cd4 100644
+--- a/src/_pytest/nodes.py
++++ b/src/_pytest/nodes.py
+@@ -29,6 +29,7 @@ from _pytest.mark.structures import Mark
+ from _pytest.mark.structures import MarkDecorator
+ from _pytest.mark.structures import NodeKeywords
+ from _pytest.outcomes import fail
++from _pytest.pathlib import Path
+ from _pytest.store import Store
+ 
+ if TYPE_CHECKING:
+@@ -361,9 +362,14 @@ class Node(metaclass=NodeMeta):
+         else:
+             truncate_locals = True
+ 
++        # excinfo.getrepr() formats paths relative to the CWD if `abspath` is False.
++        # It is possible for a fixture/test to change the CWD while this code runs, which
++        # would then result in the user seeing confusing paths in the failure message.
++        # To fix this, if the CWD changed, always display the full absolute path.
++        # It will be better to just always display paths relative to invocation_dir, but
++        # this requires a lot of plumbing (#6428).
+         try:
+-            os.getcwd()
+-            abspath = False
++            abspath = Path(os.getcwd()) != Path(self.config.invocation_dir)
+         except OSError:
+             abspath = True
+2024-10-04 05:33:55,880 - INFO - Grading answer for pytest-dev__pytest-7220...
+2024-10-04 05:33:55,883 - INFO - report: {'pytest-dev__pytest-7220': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['testing/test_nodes.py::test_failure_with_changed_cwd'], 'failure': []}, 'PASS_TO_PASS': {'success': ['testing/test_nodes.py::test_ischildnode[--True]', 'testing/test_nodes.py::test_ischildnode[-foo-True]', 'testing/test_nodes.py::test_ischildnode[-foo/bar-True]', 'testing/test_nodes.py::test_ischildnode[-foo/bar::TestBaz-True]', 'testing/test_nodes.py::test_ischildnode[foo-food-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar::TestBaz-foo/bar-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar::TestBaz-foo/bar::TestBop-False]', 'testing/test_nodes.py::test_ischildnode[foo/bar-foo/bar::TestBop-True]', 'testing/test_nodes.py::test_node_from_parent_disallowed_arguments', 'testing/test_nodes.py::test__check_initialpaths_for_relpath', 'testing/test_nodes.py::test_std_warn_not_pytestwarning'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pytest-dev__pytest-7220: resolved: True
+2024-10-04 05:33:55,884 - INFO - Attempting to stop container sweb.eval.pytest-dev__pytest-7220.validate-gold...
+2024-10-04 05:34:11,173 - INFO - Attempting to remove container sweb.eval.pytest-dev__pytest-7220.validate-gold...
+2024-10-04 05:34:11,189 - INFO - Container sweb.eval.pytest-dev__pytest-7220.validate-gold removed.
+2024-10-04 05:34:11,189 - INFO - Attempting to remove image sweb.eval.x86_64.pytest-dev__pytest-7220:latest...
+2024-10-04 05:34:11,230 - INFO - Image sweb.eval.x86_64.pytest-dev__pytest-7220:latest removed.

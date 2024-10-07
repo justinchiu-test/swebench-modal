@@ -1,0 +1,236 @@
+2024-10-04 05:27:59,036 - INFO - Building image sweb.eval.x86_64.pallets__flask-4045:latest
+Using dockerfile:
+FROM --platform=linux/x86_64 sweb.env.x86_64.dc5ff4c0e3fe8db5afc4da:latest
+
+COPY ./setup_repo.sh /root/
+RUN /bin/bash /root/setup_repo.sh
+
+WORKDIR /testbed/
+
+Adding (1) setup scripts to image build repo
+2024-10-04 05:27:59,037 - INFO - [SETUP SCRIPT] setup_repo.sh:
+#!/bin/bash
+set -euxo pipefail
+git clone -o origin https://github.com/pallets/flask /testbed
+chmod -R 777 /testbed
+cd /testbed
+git reset --hard d8c37f43724cd9fb0870f77877b7c4c7e38a19e0
+git remote remove origin
+source /opt/miniconda3/bin/activate
+conda activate testbed
+echo "Current environment: $CONDA_DEFAULT_ENV"
+python -m pip install -e .
+
+2024-10-04 05:27:59,038 - INFO - Building docker image sweb.eval.x86_64.pallets__flask-4045:latest in logs/build_images/instances/sweb.eval.x86_64.pallets__flask-4045__latest with platform linux/x86_64
+2024-10-04 05:28:04,860 - INFO - Step 1/4 : FROM --platform=linux/x86_64 sweb.env.x86_64.dc5ff4c0e3fe8db5afc4da:latest
+2024-10-04 05:28:04,861 - INFO - 
+2024-10-04 05:28:04,861 - INFO - ---> 1220c40ddd03
+2024-10-04 05:28:04,861 - INFO - Step 2/4 : COPY ./setup_repo.sh /root/
+2024-10-04 05:28:04,861 - INFO - 
+2024-10-04 05:28:05,029 - INFO - ---> badfac5185e7
+2024-10-04 05:28:05,029 - INFO - Step 3/4 : RUN /bin/bash /root/setup_repo.sh
+2024-10-04 05:28:05,029 - INFO - 
+2024-10-04 05:28:05,064 - INFO - ---> Running in 6402e3be7795
+2024-10-04 05:28:05,416 - INFO - + git clone -o origin https://github.com/pallets/flask /testbed
+2024-10-04 05:28:05,417 - INFO - Cloning into '/testbed'...
+2024-10-04 05:28:06,529 - INFO - + chmod -R 777 /testbed
+2024-10-04 05:28:06,535 - INFO - + cd /testbed
++ git reset --hard d8c37f43724cd9fb0870f77877b7c4c7e38a19e0
+2024-10-04 05:28:06,574 - INFO - HEAD is now at d8c37f43 Merge pull request #4026 from greyli/improve-type-hints
+2024-10-04 05:28:06,575 - INFO - + git remote remove origin
+2024-10-04 05:28:06,580 - INFO - + source /opt/miniconda3/bin/activate
+2024-10-04 05:28:06,581 - INFO - ++ _CONDA_ROOT=/opt/miniconda3
+2024-10-04 05:28:06,581 - INFO - ++ . /opt/miniconda3/etc/profile.d/conda.sh
+2024-10-04 05:28:06,581 - INFO - +++ export CONDA_EXE=/opt/miniconda3/bin/conda
++++ CONDA_EXE=/opt/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
++++ export _CE_CONDA=
+2024-10-04 05:28:06,581 - INFO - +++ _CE_CONDA=
++++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
+2024-10-04 05:28:06,581 - INFO - +++ '[' -z '' ']'
++++ export CONDA_SHLVL=0
++++ CONDA_SHLVL=0
++++ '[' -n '' ']'
+2024-10-04 05:28:06,582 - INFO - +++++ dirname /opt/miniconda3/bin/conda
+2024-10-04 05:28:06,583 - INFO - ++++ dirname /opt/miniconda3/bin
+2024-10-04 05:28:06,584 - INFO - +++ PATH=/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++++ export PATH
++++ '[' -z '' ']'
++++ PS1=
+2024-10-04 05:28:06,584 - INFO - ++ conda activate
+++ local cmd=activate
+++ case "$cmd" in
+2024-10-04 05:28:06,585 - INFO - ++ __conda_activate activate
+2024-10-04 05:28:06,585 - INFO - ++ '[' -n '' ']'
+++ local ask_conda
+2024-10-04 05:28:06,585 - INFO - +++ PS1=
++++ __conda_exe shell.posix activate
+2024-10-04 05:28:06,585 - INFO - +++ /opt/miniconda3/bin/conda shell.posix activate
+2024-10-04 05:28:06,764 - INFO - ++ ask_conda='PS1='\''(base) '\''
+export PATH='\''/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
+++ eval 'PS1='\''(base) '\''
+export PATH='\''/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3'\''
+export CONDA_SHLVL='\''1'\''
+export CONDA_DEFAULT_ENV='\''base'\''
+export CONDA_PROMPT_MODIFIER='\''(base) '\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
++++ PS1='(base) '
++++ export PATH=/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++++ PATH=/opt/miniconda3/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
++++ export CONDA_PREFIX=/opt/miniconda3
++++ CONDA_PREFIX=/opt/miniconda3
+2024-10-04 05:28:06,764 - INFO - +++ export CONDA_SHLVL=1
++++ CONDA_SHLVL=1
++++ export CONDA_DEFAULT_ENV=base
++++ CONDA_DEFAULT_ENV=base
++++ export 'CONDA_PROMPT_MODIFIER=(base) '
++++ CONDA_PROMPT_MODIFIER='(base) '
++++ export CONDA_EXE=/opt/miniconda3/bin/conda
++++ CONDA_EXE=/opt/miniconda3/bin/conda
++++ export _CE_M=
++++ _CE_M=
+2024-10-04 05:28:06,764 - INFO - +++ export _CE_CONDA=
++++ _CE_CONDA=
+2024-10-04 05:28:06,765 - INFO - +++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
+++ __conda_hashr
+2024-10-04 05:28:06,765 - INFO - ++ '[' -n '' ']'
+2024-10-04 05:28:06,765 - INFO - ++ '[' -n '' ']'
+++ hash -r
+2024-10-04 05:28:06,765 - INFO - + conda activate testbed
++ local cmd=activate
++ case "$cmd" in
+2024-10-04 05:28:06,765 - INFO - + __conda_activate activate testbed
+2024-10-04 05:28:06,765 - INFO - + '[' -n '' ']'
++ local ask_conda
+2024-10-04 05:28:06,765 - INFO - ++ PS1='(base) '
+++ __conda_exe shell.posix activate testbed
+2024-10-04 05:28:06,765 - INFO - ++ /opt/miniconda3/bin/conda shell.posix activate testbed
+2024-10-04 05:28:06,967 - INFO - + ask_conda='PS1='\''(testbed) '\''
+export PATH='\''/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3/envs/testbed'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''testbed'\''
+export CONDA_PROMPT_MODIFIER='\''(testbed) '\''
+export CONDA_PREFIX_1='\''/opt/miniconda3'\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
++ eval 'PS1='\''(testbed) '\''
+export PATH='\''/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'\''
+export CONDA_PREFIX='\''/opt/miniconda3/envs/testbed'\''
+export CONDA_SHLVL='\''2'\''
+export CONDA_DEFAULT_ENV='\''testbed'\''
+export CONDA_PROMPT_MODIFIER='\''(testbed) '\''
+export CONDA_PREFIX_1='\''/opt/miniconda3'\''
+export CONDA_EXE='\''/opt/miniconda3/bin/conda'\''
+export _CE_M='\'''\''
+export _CE_CONDA='\'''\''
+export CONDA_PYTHON_EXE='\''/opt/miniconda3/bin/python'\'''
+++ PS1='(testbed) '
+2024-10-04 05:28:06,968 - INFO - ++ export PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ PATH=/opt/miniconda3/envs/testbed/bin:/opt/miniconda3/condabin:/opt/miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+++ export CONDA_PREFIX=/opt/miniconda3/envs/testbed
+++ CONDA_PREFIX=/opt/miniconda3/envs/testbed
+++ export CONDA_SHLVL=2
+++ CONDA_SHLVL=2
+++ export CONDA_DEFAULT_ENV=testbed
+++ CONDA_DEFAULT_ENV=testbed
+++ export 'CONDA_PROMPT_MODIFIER=(testbed) '
+++ CONDA_PROMPT_MODIFIER='(testbed) '
+++ export CONDA_PREFIX_1=/opt/miniconda3
+++ CONDA_PREFIX_1=/opt/miniconda3
+2024-10-04 05:28:06,968 - INFO - ++ export CONDA_EXE=/opt/miniconda3/bin/conda
+++ CONDA_EXE=/opt/miniconda3/bin/conda
+++ export _CE_M=
+++ _CE_M=
+++ export _CE_CONDA=
+++ _CE_CONDA=
+2024-10-04 05:28:06,968 - INFO - ++ export CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
+++ CONDA_PYTHON_EXE=/opt/miniconda3/bin/python
++ __conda_hashr
+2024-10-04 05:28:06,968 - INFO - + '[' -n '' ']'
++ '[' -n '' ']'
+2024-10-04 05:28:06,968 - INFO - + hash -r
+2024-10-04 05:28:06,968 - INFO - + echo 'Current environment: testbed'
+2024-10-04 05:28:06,968 - INFO - Current environment: testbed
+2024-10-04 05:28:06,968 - INFO - + python -m pip install -e .
+2024-10-04 05:28:07,488 - INFO - Obtaining file:///testbed
+2024-10-04 05:28:07,489 - INFO - Preparing metadata (setup.py): started
+2024-10-04 05:28:07,984 - INFO - Preparing metadata (setup.py): finished with status 'error'
+2024-10-04 05:28:07,999 - INFO - error: subprocess-exited-with-error
+  
+  × python setup.py egg_info did not run successfully.
+  │ exit code: 1
+  ╰─> [43 lines of output]
+      running egg_info
+      creating /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info
+      writing /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/PKG-INFO
+      writing dependency_links to /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/dependency_links.txt
+      writing entry points to /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/entry_points.txt
+      writing requirements to /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/requires.txt
+      writing top-level names to /tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/top_level.txt
+      writing manifest file '/tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/SOURCES.txt'
+      reading manifest file '/tmp/pip-pip-egg-info-l7myiawr/Flask.egg-info/SOURCES.txt'
+      reading manifest template 'MANIFEST.in'
+      no previously-included directories found matching 'docs/_build'
+      warning: no previously-included files matching '*.pyc' found anywhere in distribution
+      adding license file 'LICENSE.rst'
+      Traceback (most recent call last):
+        File "<string>", line 2, in <module>
+        File "<pip-setuptools-caller>", line 34, in <module>
+        File "/testbed/setup.py", line 4, in <module>
+          setup(
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/__init__.py", line 108, in setup
+          return distutils.core.setup(**attrs)
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 184, in setup
+          return run_commands(dist)
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_distutils/core.py", line 200, in run_commands
+          dist.run_commands()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 970, in run_commands
+          self.run_command(cmd)
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/dist.py", line 945, in run_command
+          super().run_command(command)
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_distutils/dist.py", line 989, in run_command
+          cmd_obj.run()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/command/egg_info.py", line 310, in run
+          self.find_sources()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/command/egg_info.py", line 318, in find_sources
+          mm.run()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/command/egg_info.py", line 544, in run
+          self.prune_file_list()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/command/egg_info.py", line 610, in prune_file_list
+          base_dir = self.distribution.get_fullname()
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_core_metadata.py", line 266, in get_fullname
+          return _distribution_fullname(self.get_name(), self.get_version())
+        File "/opt/miniconda3/envs/testbed/lib/python3.9/site-packages/setuptools/_core_metadata.py", line 284, in _distribution_fullname
+          canonicalize_version(version, strip_trailing_zero=False),
+      TypeError: canonicalize_version() got an unexpected keyword argument 'strip_trailing_zero'
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+2024-10-04 05:28:08,152 - INFO - error: metadata-generation-failed
+
+× Encountered error while generating package metadata.
+╰─> See above for output.
+
+note: This is an issue with the package mentioned above, not pip.
+hint: See above for details.
+2024-10-04 05:28:08,795 - INFO - ---> Removed intermediate container 6402e3be7795
+2024-10-04 05:28:08,795 - ERROR - Error: The command '/bin/sh -c /bin/bash /root/setup_repo.sh' returned a non-zero code: 1
+2024-10-04 05:28:08,795 - ERROR - docker.errors.BuildError during sweb.eval.x86_64.pallets__flask-4045:latest: The command '/bin/sh -c /bin/bash /root/setup_repo.sh' returned a non-zero code: 1

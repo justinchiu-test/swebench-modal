@@ -1,0 +1,49 @@
+2024-10-04 05:01:46,786 - INFO - Environment image sweb.env.x86_64.934a137824256b612e9dc5:latest found for django__django-15388
+Building instance image sweb.eval.x86_64.django__django-15388:latest for django__django-15388
+2024-10-04 05:02:38,222 - INFO - Creating container for django__django-15388...
+2024-10-04 05:02:38,275 - INFO - Container for django__django-15388 created: 4a8c4bdd6d0282b97e91ef03a634cf1a7ae5b6723a0d0ebfd226da73adbf969f
+2024-10-04 05:02:38,652 - INFO - Container for django__django-15388 started: 4a8c4bdd6d0282b97e91ef03a634cf1a7ae5b6723a0d0ebfd226da73adbf969f
+2024-10-04 05:02:38,652 - INFO - Intermediate patch for django__django-15388 written to logs/run_evaluation/validate-gold/gold/django__django-15388/patch.diff, now applying to container...
+2024-10-04 05:02:38,901 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:02:38,961 - INFO - >>>>> Applied Patch:
+patching file django/template/autoreload.py
+
+2024-10-04 05:02:40,054 - INFO - Git diff before:
+diff --git a/django/template/autoreload.py b/django/template/autoreload.py
+index cf1b20ba95..7242d68f2d 100644
+--- a/django/template/autoreload.py
++++ b/django/template/autoreload.py
+@@ -48,6 +48,8 @@ def watch_for_template_changes(sender, **kwargs):
+ 
+ @receiver(file_changed, dispatch_uid='template_loaders_file_changed')
+ def template_changed(sender, file_path, **kwargs):
++    if file_path.suffix == '.py':
++        return
+     for template_dir in get_template_directories():
+         if template_dir in file_path.parents:
+             reset_loaders()
+2024-10-04 05:02:40,055 - INFO - Eval script for django__django-15388 written to logs/run_evaluation/validate-gold/gold/django__django-15388/eval.sh; copying to container...
+2024-10-04 05:02:48,710 - INFO - Test runtime: 8.46 seconds
+2024-10-04 05:02:48,711 - INFO - Test output for django__django-15388 written to logs/run_evaluation/validate-gold/gold/django__django-15388/test_output.txt
+2024-10-04 05:02:48,780 - INFO - Git diff after:
+diff --git a/django/template/autoreload.py b/django/template/autoreload.py
+index cf1b20ba95..7242d68f2d 100644
+--- a/django/template/autoreload.py
++++ b/django/template/autoreload.py
+@@ -48,6 +48,8 @@ def watch_for_template_changes(sender, **kwargs):
+ 
+ @receiver(file_changed, dispatch_uid='template_loaders_file_changed')
+ def template_changed(sender, file_path, **kwargs):
++    if file_path.suffix == '.py':
++        return
+     for template_dir in get_template_directories():
+         if template_dir in file_path.parents:
+             reset_loaders()
+2024-10-04 05:02:48,780 - INFO - Grading answer for django__django-15388...
+2024-10-04 05:02:48,801 - INFO - report: {'django__django-15388': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_non_template_changed_in_template_directory (template_tests.test_autoreloader.TemplateReloadTests)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_get_template_directories (template_tests.test_autoreloader.Jinja2TemplateReloadTests)', 'test_reset_all_loaders (template_tests.test_autoreloader.Jinja2TemplateReloadTests)', 'test_watch_for_template_changes (template_tests.test_autoreloader.Jinja2TemplateReloadTests)', 'test_get_template_directories (template_tests.test_autoreloader.TemplateReloadTests)', 'test_non_template_changed (template_tests.test_autoreloader.TemplateReloadTests)', 'test_reset_all_loaders (template_tests.test_autoreloader.TemplateReloadTests)', 'test_template_changed (template_tests.test_autoreloader.TemplateReloadTests)', 'test_template_dirs_normalized_to_paths (template_tests.test_autoreloader.TemplateReloadTests)', 'test_watch_for_template_changes (template_tests.test_autoreloader.TemplateReloadTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-15388: resolved: True
+2024-10-04 05:02:48,801 - INFO - Attempting to stop container sweb.eval.django__django-15388.validate-gold...
+2024-10-04 05:03:04,412 - INFO - Attempting to remove container sweb.eval.django__django-15388.validate-gold...
+2024-10-04 05:03:04,450 - INFO - Container sweb.eval.django__django-15388.validate-gold removed.
+2024-10-04 05:03:04,450 - INFO - Attempting to remove image sweb.eval.x86_64.django__django-15388:latest...
+2024-10-04 05:03:05,217 - INFO - Image sweb.eval.x86_64.django__django-15388:latest removed.

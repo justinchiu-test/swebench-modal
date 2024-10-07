@@ -1,0 +1,83 @@
+2024-10-04 05:58:43,360 - INFO - Environment image sweb.env.x86_64.c795f4b88616b8462021ed:latest found for sympy__sympy-13031
+Building instance image sweb.eval.x86_64.sympy__sympy-13031:latest for sympy__sympy-13031
+2024-10-04 05:59:08,767 - INFO - Creating container for sympy__sympy-13031...
+2024-10-04 05:59:08,801 - INFO - Container for sympy__sympy-13031 created: 82342dee5784c0edc4a49ee0ccbb64c08e3c3102aa7be247ae0a5f8fdc04f892
+2024-10-04 05:59:09,213 - INFO - Container for sympy__sympy-13031 started: 82342dee5784c0edc4a49ee0ccbb64c08e3c3102aa7be247ae0a5f8fdc04f892
+2024-10-04 05:59:09,214 - INFO - Intermediate patch for sympy__sympy-13031 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13031/patch.diff, now applying to container...
+2024-10-04 05:59:09,436 - INFO - Failed to apply patch to container, trying again...
+2024-10-04 05:59:09,494 - INFO - >>>>> Applied Patch:
+patching file sympy/matrices/sparse.py
+
+2024-10-04 05:59:09,886 - INFO - Git diff before:
+diff --git a/sympy/matrices/sparse.py b/sympy/matrices/sparse.py
+index e6f36cdf35..7701cbc179 100644
+--- a/sympy/matrices/sparse.py
++++ b/sympy/matrices/sparse.py
+@@ -985,8 +985,10 @@ def col_join(self, other):
+         >>> C == A.row_insert(A.rows, Matrix(B))
+         True
+         """
+-        if not self:
+-            return type(self)(other)
++        # A null matrix can always be stacked (see  #10770)
++        if self.rows == 0 and self.cols != other.cols:
++            return self._new(0, other.cols, []).col_join(other)
++
+         A, B = self, other
+         if not A.cols == B.cols:
+             raise ShapeError()
+@@ -1191,8 +1193,10 @@ def row_join(self, other):
+         >>> C == A.col_insert(A.cols, B)
+         True
+         """
+-        if not self:
+-            return type(self)(other)
++        # A null matrix can always be stacked (see  #10770)
++        if self.cols == 0 and self.rows != other.rows:
++            return self._new(other.rows, 0, []).row_join(other)
++
+         A, B = self, other
+         if not A.rows == B.rows:
+             raise ShapeError()
+2024-10-04 05:59:09,886 - INFO - Eval script for sympy__sympy-13031 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13031/eval.sh; copying to container...
+2024-10-04 05:59:16,140 - INFO - Test runtime: 6.08 seconds
+2024-10-04 05:59:16,141 - INFO - Test output for sympy__sympy-13031 written to logs/run_evaluation/validate-gold/gold/sympy__sympy-13031/test_output.txt
+2024-10-04 05:59:16,220 - INFO - Git diff after:
+diff --git a/sympy/matrices/sparse.py b/sympy/matrices/sparse.py
+index e6f36cdf35..7701cbc179 100644
+--- a/sympy/matrices/sparse.py
++++ b/sympy/matrices/sparse.py
+@@ -985,8 +985,10 @@ def col_join(self, other):
+         >>> C == A.row_insert(A.rows, Matrix(B))
+         True
+         """
+-        if not self:
+-            return type(self)(other)
++        # A null matrix can always be stacked (see  #10770)
++        if self.rows == 0 and self.cols != other.cols:
++            return self._new(0, other.cols, []).col_join(other)
++
+         A, B = self, other
+         if not A.cols == B.cols:
+             raise ShapeError()
+@@ -1191,8 +1193,10 @@ def row_join(self, other):
+         >>> C == A.col_insert(A.cols, B)
+         True
+         """
+-        if not self:
+-            return type(self)(other)
++        # A null matrix can always be stacked (see  #10770)
++        if self.cols == 0 and self.rows != other.rows:
++            return self._new(other.rows, 0, []).row_join(other)
++
+         A, B = self, other
+         if not A.rows == B.rows:
+             raise ShapeError()
+2024-10-04 05:59:16,220 - INFO - Grading answer for sympy__sympy-13031...
+2024-10-04 05:59:16,223 - INFO - report: {'sympy__sympy-13031': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_sparse_matrix'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_transpose', 'test_trace', 'test_CL_RL', 'test_add', 'test_errors', 'test_len', 'test_sparse_zeros_sparse_eye', 'test_copyin', 'test_sparse_solve'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-13031: resolved: True
+2024-10-04 05:59:16,223 - INFO - Attempting to stop container sweb.eval.sympy__sympy-13031.validate-gold...
+2024-10-04 05:59:31,630 - INFO - Attempting to remove container sweb.eval.sympy__sympy-13031.validate-gold...
+2024-10-04 05:59:31,658 - INFO - Container sweb.eval.sympy__sympy-13031.validate-gold removed.
+2024-10-04 05:59:31,658 - INFO - Attempting to remove image sweb.eval.x86_64.sympy__sympy-13031:latest...
+2024-10-04 05:59:31,776 - INFO - Image sweb.eval.x86_64.sympy__sympy-13031:latest removed.
