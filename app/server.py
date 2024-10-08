@@ -238,7 +238,7 @@ async def main():
     from swebench_modal.harness.log_parsers import MAP_REPO_TO_PARSER
 
 
-    data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test")
+    data = datasets.load_dataset("princeton-nlp/SWE-bench_lite", split="test[:50]")
     """
     repos = set(data["test"]["repo"])
     paths = clone_repos(repos)
@@ -275,11 +275,15 @@ async def main():
     all_passed = []
     failed = []
     for example, output in zip(data, outputs):
+        eval_json = json.loads(output.eval_json_str)
+        eval_map = {x["nodeid"]: x["outcome"] for x in eval_json["tests"] if "call" in x}
+        print(output.eval_output)
+        print(eval_map)
+        import pdb; pdb.set_trace()
+
+
         log_parser = MAP_REPO_TO_PARSER[example["repo"]]
         log = log_parser(output.eval_output)
-
-        eval_json = json.loads(output.eval_json_str)
-        import pdb; pdb.set_trace()
 
         fail_rate = np.mean([result == "FAILED" for result in log.values()])
         any_fail = any([result == "FAILED" for result in log.values()])
@@ -294,9 +298,13 @@ async def main():
         if not all_pass:
             failed.append((example, output, log))
 
+
         instance_id = example["instance_id"]
         with open(f"reports/{instance_id}", "w") as f:
             f.write(json.dumps((example, output.eval_output, log)))
+
+
+
 
     print("passed:", sum(all_passed), len(all_passed))
 
